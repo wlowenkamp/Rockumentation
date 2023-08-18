@@ -25,6 +25,18 @@ if __name__ == "__main__":
             User(username= "MusicGuy", password= "password1", profile_picture= "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"),
         ]
 
+        #Seed Users
+        for user_info in user_data:
+            new_user = User(
+                username = user_info.username,
+                password = user_info.password,
+                profile_picture = user_info.profile_picture,
+            )
+            db.session.add(new_user)
+        db.session.commit()
+
+        print ("Users seeded successfully")
+
         #Albums
         album_data = [
             Album(title="Thriller", image="https://www.albumartexchange.com/coverart/gallery/mi/michaeljackson_thriller_d33u.jpg", artist="Michael Jackson", genre="Pop", release_year=1982),
@@ -94,10 +106,26 @@ if __name__ == "__main__":
 
         print("Albums seeded successfully.")
 
-        db.session.commit()
+      
 
 
         #Collections
+        collection_data = [
+            {"name": "Favorites", "user_id": 1},
+            {"name": "Pop Albums", "user_id": 2},
+            {"name": "Rock Albums", "user_id": 3},
+        ]
+
+        #Seed Collections
+        for collection_info in collection_data:
+            new_collection = Collection(
+                title = collection_info["name"],
+                user_id = collection_info["user_id"],
+            )
+            db.session.add(new_collection)
+        db.session.commit()
+
+        print("Collections seeded successfully")
 
 
 
