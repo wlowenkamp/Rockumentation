@@ -124,14 +124,14 @@ class Album(db.Model, SerializerMixin):
             raise ValueError("Album title must be provided")
 
         existing_album = Album.query.filter_by(title=new_title).first()
-        if (
-            existing_album
-            and existing_album.collection_albums.collection.user_id
-            == self.collection_albums.collection.user_id
-        ):
-            raise ValueError("An album with this title already exists")
+        
+        if existing_album:
+            for collection_album in existing_album.collection_albums:
+                if collection_album.collection.user_id == self.collection_albums[0].collection.user_id:
+                    raise ValueError("An album with this title already exists for this user")
 
         return new_title
+
 
     @validates("image")
     def validates_image(self, key, new_image):
