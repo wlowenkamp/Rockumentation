@@ -24,6 +24,8 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String, nullable=False)
     profile_picture = db.Column(db.String)
 
+
+
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username})>"
 
@@ -32,7 +34,7 @@ class User(db.Model, SerializerMixin):
 
     # Access Albums Through Collections
 
-    user_albums = association_proxy("collections", "albums")
+    user_albums = association_proxy("collections", "collection_albums")
 
     # User Validations
 
@@ -88,17 +90,18 @@ class Collection(db.Model, SerializerMixin):
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
     # Relationship
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     collection_albums = db.relationship("CollectionAlbum", backref="collection")
 
 
 class CollectionAlbum(db.Model, SerializerMixin):
     __tablename__ = "collection_album"
-
     id = db.Column(db.Integer, primary_key=True)
     album_id = db.Column(db.Integer, db.ForeignKey("album.id"), nullable=False)
     collection_id = db.Column(
         db.Integer, db.ForeignKey("collection.id"), nullable=False
     )
+
 
 
 class Album(db.Model, SerializerMixin):

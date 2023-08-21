@@ -1,5 +1,5 @@
 import React from "react";
-import {Router, Switch, Route } from "react-router-dom"; 
+import {BrowserRouter as Router, Switch, Route } from "react-router-dom"; 
 import Main from "./Main";
 import Users from "./Users";
 import UserProfile from "./UserProfile";
