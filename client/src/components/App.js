@@ -8,6 +8,10 @@ import SignUp from "./SignUp";
 import Navbar from "./Navbar";
 
 const App = () => {
+
+  const handleSearch = (searchQuery) => {
+    
+  }
   return (
     <Router>
       <Navbar />

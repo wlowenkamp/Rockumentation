@@ -42,7 +42,7 @@ api.add_resource(UserLogin, "/api/login")
 
 
 
-#Get All Users
+#Get All Users 
 class Users(Resource):
 
     def get(self):
@@ -115,8 +115,8 @@ class AddAlbumToCollection(Resource):
         collection = Collection.query.get(collection_id)
         album = Album.query.get(album_id)
         
-        if not collection or not album:
-            return {"message": "Collection or Album not found"}, 404
+        if not album:
+            return {"message": "Album not found"}, 404
 
         if album not in collection.albums:
             collection.albums.append(album)
