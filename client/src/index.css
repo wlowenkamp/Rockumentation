@@ -5,3 +5,9 @@
   --text: hsla(0, 0%, 100%, 0.88);
 }
 
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+

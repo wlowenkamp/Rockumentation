@@ -24,7 +24,7 @@ const Search = () => {
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        placeholder="Search..."
+        placeholder="Search for an album!"
       />
       <button onClick={handleSearch}>Search</button>
       <div>
