@@ -109,7 +109,7 @@ class Albums(Resource):
 
 api.add_resource(Albums, "/api/albums")
 
-#Add Album to collection
+# Add Album to collection
 class AddAlbumToCollection(Resource):
     def post(self, collection_id, album_id):
         collection = Collection.query.get(collection_id)
@@ -118,12 +118,15 @@ class AddAlbumToCollection(Resource):
         if not album:
             return {"message": "Album not found"}, 404
 
-        if album not in collection.albums:
-            collection.albums.append(album)
-            db.session.commit()
-            return {"message": "Album added to collection"}, 201
+        if collection and album:
+            if album not in collection.albums:
+                collection.albums.append(album)
+                db.session.commit()
+                return {"message": "Album added to collection"}, 201
+            else:
+                return {"message": "Album already in collection"}, 409
         else:
-            return {"message": "Album already in collection"}, 409
+            return {"message": "Collection or Album not found"}, 404
 
 api.add_resource(AddAlbumToCollection, "/api/collections/<int:collection_id>/albums/<int:album_id>")
 
@@ -135,7 +138,6 @@ class RemoveAlbumFromCollection(Resource):
 
         if not collection or not album:
             return {"message": "Collection or Album not found"}, 404
-
 
         collection_album = CollectionAlbum.query.filter_by(collection_id=collection.id, album_id=album.id).first()
 

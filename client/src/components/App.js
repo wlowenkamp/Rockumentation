@@ -8,7 +8,7 @@ import SignUp from "./SignUp";
 import Navbar from "./Navbar";
 
 const App = () => {
-  const [searchResults, setSearchResults] = useState([]); // State to store search results
+  const [searchResults, setSearchResults] = useState([]); 
 
   const handleSearch = (searchQuery) => {
     fetch(`http://127.0.0.1:5555/api/albums?q=${searchQuery}`)

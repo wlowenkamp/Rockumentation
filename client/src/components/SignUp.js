@@ -55,7 +55,7 @@ function SignUp() {
       {signUpError ? (
         <h2 className="sign-up-error">{signUpError}</h2>
       ) : null}
-      <h1 className="sign-up-header">Call the shots with your own movie lists when you join us!</h1>
+      <h1 className="sign-up-header">'Rockument' Your Collection Today!</h1>
         <form onSubmit={handleSubmit}>
         <input type="text" placeholder="Username*" onChange={handleUsernameChange}/>
         <input type="password" placeholder="Password*" onChange={handlePasswordChange}/>
