@@ -73,7 +73,7 @@ class User(db.Model, SerializerMixin):
                 "Password must contain at least one letter AND at least one number"
             )
 
-        return bcrypt.generate_password_hash(new_password).decode("utf-8")
+        return Bcrypt.generate_password_hash(new_password).decode("utf-8")
 
     @validates("profile_picture")
     def validates_profile_picture(self, key, new_profile_picture):
