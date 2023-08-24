@@ -1,4 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_bcrypt import Bcrypt
 from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.ext.associationproxy import association_proxy
@@ -72,7 +73,7 @@ class User(db.Model, SerializerMixin):
                 "Password must contain at least one letter AND at least one number"
             )
 
-        return new_password
+        return bcrypt.generate_password_hash(new_password).decode("utf-8")
 
     @validates("profile_picture")
     def validates_profile_picture(self, key, new_profile_picture):
