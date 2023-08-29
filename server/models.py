@@ -89,6 +89,7 @@ class Collection(db.Model, SerializerMixin):
     title = db.Column(db.String, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     collection_albums = db.relationship("CollectionAlbum", backref="collection")
+    albums = association_proxy("collection_albums", "album")
     user = db.relationship("User", back_populates="collections")
 
 class CollectionAlbum(db.Model, SerializerMixin):
@@ -98,7 +99,7 @@ class CollectionAlbum(db.Model, SerializerMixin):
     collection_id = db.Column(
         db.Integer, db.ForeignKey("collection.id"), nullable=False
     )
-
+    
 class Album(db.Model, SerializerMixin):
     __tablename__ = "album"
 

@@ -6,7 +6,7 @@ const UserProfile = ({ activeUser }) => {
 
   useEffect(() => {
     if (activeUser) {
-      fetch(`http://127.0.0.1:5555/api/users/${activeUser}/collections`)
+      fetch(`http://127.0.0.1:5555/api/users/${activeUser.id}/collections`)
         .then((response) => response.json())
         .then((data) => setCollections(data))
         .catch((error) => console.error('Error fetching collections:', error));
@@ -14,9 +14,9 @@ const UserProfile = ({ activeUser }) => {
   }, [activeUser]);
 
   return (
-    <div className="container">
-      <h1 className="text-center mt-4">Welcome, {activeUser?.username}!</h1>
-      <h2>Your Collections</h2>
+         <div className="container">
+            <h1 className="text-center mt-4">Welcome, {activeUser?.username}!</h1>
+            <h2>Your Collections</h2>
       <div className="row row-cols-1 row-cols-md-3 g-4">
         {collections.map((collection) => (
           <div className="col" key={collection.id}>

@@ -36,7 +36,7 @@ class UserLogin(Resource):
         
         print(user)
 
-        return (user.to_dict()),
+        return user.to_dict()
 
         if user and user.password == password:
             print(user.to_dict(only=("id", "username"))) 
@@ -88,23 +88,24 @@ class UserProfile(Resource):
 
 api.add_resource(UserProfile, "/api/profile/<int:user_id>")
 
-#Get All Collections
+#Get User Collections
 class Collections(Resource):
-    def get(self):
-        collections = Collection.query.all()
+    def get(self, user_id):
+        collections = Collection.query.filter_by(user_id=user_id)
         serialized_collections = []
 
         for collection in collections:
             serialized_collection = {
                 "id": collection.id,
                 "title": collection.title,
-                "user_id": collection.user_id
+                "user_id": collection.user_id,
+                "albums": [album.to_dict() for album in collection.albums] 
             }
             serialized_collections.append(serialized_collection)
 
         return make_response(serialized_collections, 200)
     
-api.add_resource(Collections, "/api/collections")
+api.add_resource(Collections, "/api/users/<int:user_id>/collections")
     
 #Get All Albums
 class Albums(Resource):

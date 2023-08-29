@@ -25,7 +25,7 @@ const App = () => {
         setSearchResults([]);
       });
   };
-
+console.log("will this work")
   return (
     <Router>
       <Navbar handleSearch={handleSearch} /> 
@@ -43,7 +43,7 @@ const App = () => {
           <Users />
         </Route>
         <Route path="/profile/:id">
-          <UserProfile />
+          <UserProfile activeUser={user} />
         </Route>
       </Switch>
     </Router>

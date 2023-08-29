@@ -34,10 +34,10 @@ function Login({loginStatus, handleLogin}) {
       if (response.ok) {
         const data = await response.json();
         if (data) {
-          console.log(data["user"]);
+          console.log(data);
           setLoginError(null);
           handleLogin(data);
-          history.push(`/profile/${data.user_id}`);
+          history.push(`/profile/${data.id}`);
         } else {
           console.log("Login failed");
           setLoginError("Invalid username or password");
@@ -60,10 +60,10 @@ function Login({loginStatus, handleLogin}) {
           <h2 className="login-error">{loginError}</h2>
         ) : null}
         <h1 className='log-in-header'>Welcome Back</h1>
-        <form>
+        <form onSubmit={handleSubmit}>
         <input type="text" value={username} placeholder="Username" onChange={handleUsernameChange}/>
         <input type="password" value={password} placeholder="Password" onChange={handlePasswordChange}/>
-        <button type= "submit" className= "login-button" onClick={handleSubmit}>Submit</button>
+        <button type= "submit" className= "login-button" >Submit</button>
         </form>
       </div>
     </div>
