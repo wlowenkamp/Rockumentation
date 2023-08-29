@@ -24,19 +24,24 @@ def index():
 #User Login
 class UserLogin(Resource):
     def post(self):
-        data = request.get_json()
-        username = data.get("username")
-        password = data.get("password")
+        #data = request.get_json()
+        # print(data)
+        # username = data.get("username")
+        # password = data.get("password")
 
-        if not username or not password:
-            return {"message":"Invalid username or password"}, 400
+        user = User.query.filter_by(username="Wlowenkamp").first()
+
+        if not user or not user.password == "password1":
+            return make_response({"message":"Invalid username or password"}, 400)
         
-        user = User.query.filter_by(username=username).first()
+        print(user)
+
+        return (user.to_dict()),
 
         if user and user.password == password:
-            return {"message": "Login successful", "user_id": user.id}, 200
+            print(user.to_dict(only=("id", "username"))) 
         else:
-            return {"message": "Invalid username or password"}, 401
+            return make_response({"message": "Invalid username or password"}, 401)
         
 api.add_resource(UserLogin, "/api/login")
 

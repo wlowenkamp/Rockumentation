@@ -2,7 +2,7 @@
 
 # Standard library imports
 import random
-import datetime
+
 
 
 # Remote library imports
@@ -11,31 +11,35 @@ from faker import Faker
 # Local imports
 from app import app, db
 from models import User, Album, Collection, CollectionAlbum
+from config import Bcrypt
+
 
 
 if __name__ == "__main__":
     fake = Faker()
     with app.app_context():
         print("Starting seed...")
+        User.query.delete()
+        Album.query.delete()
+        Collection.query.delete()
+
+        
+
 
         # Users
-        user_data = [
-            User(username= "Wlowenkamp", password= "password1", profile_picture= "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"),
-            User(username= "Cmcgrath", password= "password1", profile_picture= "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"),
-            User(username= "MusicGuy", password= "password1", profile_picture= "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png"),
+        users = [
+            User(username="Wlowenkamp", profile_picture="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", password="password1"),
+            User(username="Cmcgrath", profile_picture="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", password="password1"),
+            User(username="MusicGuy", profile_picture="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", password="password1"),
         ]
 
-        #Seed Users
-        for user_info in user_data:
-            new_user = User(
-                username = user_info.username,
-                password = user_info.password,
-                profile_picture = user_info.profile_picture,
-            )
-            db.session.add(new_user)
+        # Seed Users
+        for user in users:
+            db.session.add(user)
         db.session.commit()
 
-        print ("Users seeded successfully")
+        print("Users seeded successfully")
+
 
         #Albums
         album_data = [

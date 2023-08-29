@@ -1,9 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import CollectionCard from './CollectionCard';
 
-const UserProfile = () => {
+const UserProfile = ({ activeUser }) => {
+  const [collections, setCollections] = useState([]);
+
+  useEffect(() => {
+    if (activeUser) {
+      fetch(`http://127.0.0.1:5555/api/users/${activeUser}/collections`)
+        .then((response) => response.json())
+        .then((data) => setCollections(data))
+        .catch((error) => console.error('Error fetching collections:', error));
+    }
+  }, [activeUser]);
+
   return (
-    <div>
-      <h1>User Profile</h1>
+    <div className="container">
+      <h1 className="text-center mt-4">Welcome, {activeUser?.username}!</h1>
+      <h2>Your Collections</h2>
+      <div className="row row-cols-1 row-cols-md-3 g-4">
+        {collections.map((collection) => (
+          <div className="col" key={collection.id}>
+            <CollectionCard collection={collection} />
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

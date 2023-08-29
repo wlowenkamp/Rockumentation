@@ -8,7 +8,13 @@ import SignUp from "./SignUp";
 import Navbar from "./Navbar";
 
 const App = () => {
-  const [searchResults, setSearchResults] = useState([]); 
+  const [searchResults, setSearchResults] = useState([]);
+  
+  const [user, setUser] = useState(null);
+
+  const handleLogin = (activeUser) => {
+    setUser(activeUser)
+  }
 
   const handleSearch = (searchQuery) => {
     fetch(`http://127.0.0.1:5555/api/albums?q=${searchQuery}`)
@@ -22,13 +28,13 @@ const App = () => {
 
   return (
     <Router>
-      <Navbar handleSearch={handleSearch} /> {/* Pass handleSearch to Navbar */}
+      <Navbar handleSearch={handleSearch} /> 
       <Switch>
         <Route exact path="/">
           <Main />
         </Route>
         <Route path="/login">
-          <Login />
+          <Login handleLogin={handleLogin} />
         </Route>
         <Route path="/signup">
           <SignUp />

@@ -1,9 +1,17 @@
 import React from 'react';
 
-const CollectionCard = () => {
+const CollectionCard = ({ collection }) => {
   return (
-    <div>
-      <h1>Collection Card</h1>
+    <div className="collection-card card">
+      <div className="card-body">
+        <h5 className="card-title">{collection.title}</h5>
+        <p className="card-text">Albums:</p>
+        <ul>
+          {collection.albums.map((album) => (
+            <li key={album.id}>{album.title}</li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 };
