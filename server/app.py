@@ -3,7 +3,7 @@
 # Standard library imports
 
 # Remote library imports
-from flask import request, make_response, jsonify
+from flask import request, make_response, jsonify, session
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource
@@ -21,29 +21,30 @@ def index():
     return '<h1>Phase 4 Project Server</h1>'
 #-------------------Endpoints I need ------------------------------------------
 
-#User Login
+# User Login
 class UserLogin(Resource):
     def post(self):
-        #data = request.get_json()
-        # print(data)
-        # username = data.get("username")
-        # password = data.get("password")
+        data = request.get_json()
+        if not data:
+            return make_response({"message": "Missing request data"}, 400)
 
-        user = User.query.filter_by(username="Wlowenkamp").first()
+        username = data.get("username")
+        password = data.get("password")
 
-        if not user or not user.password == "password1":
-            return make_response({"message":"Invalid username or password"}, 400)
-        
-        print(user)
+        if not username or not password:
+            return make_response({"message": "Invalid request data"}, 400)
+
+        user = User.query.filter_by(username=username).first()
+
+        if not user or not user.check_password(password):
+            return make_response({"message": "Invalid username or password"}, 401)
+
+        session[user.id] = user.id
 
         return user.to_dict()
 
-        if user and user.password == password:
-            print(user.to_dict(only=("id", "username"))) 
-        else:
-            return make_response({"message": "Invalid username or password"}, 401)
-        
 api.add_resource(UserLogin, "/api/login")
+
 
 
 
@@ -106,6 +107,32 @@ class Collections(Resource):
         return make_response(serialized_collections, 200)
     
 api.add_resource(Collections, "/api/users/<int:user_id>/collections")
+
+#Get User Favorites
+class UserFavorites(Resource):
+    def get(self, user_id, collection_id):
+                collections = Collection.query.filter_by(user_id=user_id, collection_id=collection_id)
+                return make_response([collection.to_dict() for collection in collections], 200)
+    
+    def post(self, user_id, collection_id):
+        data = request.json
+        try:
+            collection = Collection(
+                user_id = user_id,
+                collection_id = collection_id,
+                album_id = data["album_id"],  
+            )
+        except ValueError as v_error:
+            return make_response({ "errors": [str(v_error)]}, 400)
+        
+        db.session.add(collection)
+        db.session.commit()
+        return make_response(collection.to_dict()), 201
+
+api.add_resource(UserFavorites, "/api/collections/<int:collection_id>/user/<int:user_id>")
+
+
+
     
 #Get All Albums
 class Albums(Resource):
@@ -114,6 +141,14 @@ class Albums(Resource):
         return make_response([album.to_dict() for album in albums], 200)
 
 api.add_resource(Albums, "/api/albums")
+
+#Get Album by Id
+class AlbumById(Resource):
+    def get(self, album_id):
+     album = Album.query.get(album_id)
+     #check for album and return message
+     return make_response(album.to_dict(), 200)
+api.add_resource(AlbumById, "/api/albums/<int:album_id>")
 
 # Add Album to collection
 class AddAlbumToCollection(Resource):
@@ -155,6 +190,7 @@ class RemoveAlbumFromCollection(Resource):
             return {"message": "Album not in collection"}, 404
 
 api.add_resource(RemoveAlbumFromCollection, "/api/collections/<int:collection_id>/albums/<int:album_id>")
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

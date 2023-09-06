@@ -114,22 +114,22 @@ if __name__ == "__main__":
 
 
         #Collections
-        collection_data = [
-            {"name": "Favorites", "user_id": 1},
-            {"name": "Pop Albums", "user_id": 2},
-            {"name": "Rock Albums", "user_id": 3},
-        ]
+        # collection_data = [
+        #     {"name": "Favorites", "user_id": 1},
+        #     {"name": "Pop Albums", "user_id": 2},
+        #     {"name": "Rock Albums", "user_id": 3},
+        # ]
 
         #Seed Collections
-        for collection_info in collection_data:
-            new_collection = Collection(
-                title = collection_info["name"],
-                user_id = collection_info["user_id"],
-            )
-            db.session.add(new_collection)
-        db.session.commit()
+        # for collection_info in collection_data:
+        #     new_collection = Collection(
+        #         title = collection_info["name"],
+        #         user_id = collection_info["user_id"],
+        #     )
+        #     db.session.add(new_collection)
+        # db.session.commit()
 
-        print("Collections seeded successfully")
+        # print("Collections seeded successfully")
 
 
 

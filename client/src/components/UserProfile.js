@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import CollectionCard from './CollectionCard';
 
 const UserProfile = ({ activeUser }) => {
+  console.log(activeUser)
   const [collections, setCollections] = useState([]);
 
   useEffect(() => {

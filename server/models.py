@@ -21,7 +21,7 @@ class User(db.Model, SerializerMixin):
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     profile_picture = db.Column(db.String)
-    serialize_rules = ("-collections.user",)
+    #serialize_rules = ("-collections.user",)
     #password_hash = db.Column(db.String)
 
     # def get_password_hash(self):
@@ -35,10 +35,17 @@ class User(db.Model, SerializerMixin):
     # def authenticate(self, password_string):
     #     return bcrypt().check_password_hash(self.password_hash, password_string)
 
+    def check_password(self, password):
+        # Add Hash -> Hashing is always one-way
+        if self.password == password:
+            return True
+        else:
+            return False 
+        
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username})>"
 
-    collections = db.relationship("Collection", back_populates="user")
+    #collections = db.relationship("Collection", back_populates="user")
     user_albums = association_proxy("collections", "collection_albums")
 
     @validates("username")
@@ -86,11 +93,11 @@ class Collection(db.Model, SerializerMixin):
     __tablename__ = "collection"
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
+    collection_id = db.Column(db.Integer, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    collection_albums = db.relationship("CollectionAlbum", backref="collection")
-    albums = association_proxy("collection_albums", "album")
-    user = db.relationship("User", back_populates="collections")
+    album_id = db.Column(db.Integer, db.ForeignKey("album.id"), nullable=False)
+    # albums = association_proxy("collection_albums", "album")
+    # user = db.relationship("User", back_populates="collections")
 
 class CollectionAlbum(db.Model, SerializerMixin):
     __tablename__ = "collection_album"
