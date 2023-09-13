@@ -50,6 +50,11 @@ function Navbar({ loginStatus, handleLogout, activeUser, handleSearch }) {
                     {activeName}
                   </NavLink>
                 </li>
+                <li className="nav-item">
+                  <button className="btn btn-primary" onClick={handleLogout}>
+                    Logout
+                  </button>
+                </li>
               </>
             ) : (
               <>
@@ -69,11 +74,6 @@ function Navbar({ loginStatus, handleLogout, activeUser, handleSearch }) {
         </div>
         <div className="ml-auto">
           <Search handleSearch={handleSearch} />
-          {loginStatus ? (
-            <button className="btn btn-primary" onClick={handleLogout}>
-              Logout
-            </button>
-          ) : null}
         </div>
       </div>
     </nav>
@@ -81,8 +81,6 @@ function Navbar({ loginStatus, handleLogout, activeUser, handleSearch }) {
 }
 
 export default Navbar;
-
-
 
 
 

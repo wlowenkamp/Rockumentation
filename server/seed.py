@@ -10,8 +10,8 @@ from faker import Faker
 
 # Local imports
 from app import app, db
-from models import User, Album, Collection, CollectionAlbum
-from config import Bcrypt
+from models import User, Album, Collection
+
 
 
 
@@ -27,18 +27,32 @@ if __name__ == "__main__":
 
 
         # Users
-        users = [
-            User(username="Wlowenkamp", profile_picture="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", password="password1"),
-            User(username="Cmcgrath", profile_picture="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", password="password1"),
-            User(username="MusicGuy", profile_picture="https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", password="password1"),
+        users_data = [
+            {"username": "Wlowenkamp", "profile_picture": "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", "password": "password1"},
+            {"username": "Cmcgrath", "profile_picture": "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", "password": "password1"},
+            {"username": "MusicGuy", "profile_picture": "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", "password": "password1"},
         ]
 
-        # Seed Users
-        for user in users:
-            db.session.add(user)
-        db.session.commit()
+        # Seed Users and create "Master Collection" for each user
+        for user_data in users_data:
+            new_user = User(
+                username=user_data["username"],
+                profile_picture=user_data["profile_picture"],
+            )
+            new_user.set_password(user_data["password"])
+            
 
-        print("Users seeded successfully")
+
+            db.session.add(new_user)
+            db.session.commit()  # Commit the user to get the auto-generated user ID
+
+            # Create the "Master Collection" for the user
+            new_collection = Collection(user_id=new_user.id)  # Let the database auto-generate collection_id
+            db.session.add(new_collection)
+            db.session.commit()
+
+
+        print("Users and Master Collections seeded successfully")
 
 
         #Albums
@@ -110,26 +124,10 @@ if __name__ == "__main__":
 
         print("Albums seeded successfully.")
 
-      
 
 
-        #Collections
-        # collection_data = [
-        #     {"name": "Favorites", "user_id": 1},
-        #     {"name": "Pop Albums", "user_id": 2},
-        #     {"name": "Rock Albums", "user_id": 3},
-        # ]
 
-        #Seed Collections
-        # for collection_info in collection_data:
-        #     new_collection = Collection(
-        #         title = collection_info["name"],
-        #         user_id = collection_info["user_id"],
-        #     )
-        #     db.session.add(new_collection)
-        # db.session.commit()
 
-        # print("Collections seeded successfully")
 
 
 

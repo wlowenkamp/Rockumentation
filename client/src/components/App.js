@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
+import { UserContext } from "./UserContext/User";
 import Main from "./Main";
 import Users from "./Users";
 import UserProfile from "./UserProfile";
@@ -9,12 +10,28 @@ import Navbar from "./Navbar";
 
 const App = () => {
   const [searchResults, setSearchResults] = useState([]);
-  
-  const [user, setUser] = useState(null);
+  const history = useHistory();
+  const {user, setUser} = useContext(UserContext);
+
+
+  useEffect(() => {
+    fetch("/api/check_session")
+      .then((response) => {
+        if (response.ok) {
+          response.json().then((user) => setUser(user));
+        }
+      });
+  }, [setUser]);
 
   const handleLogin = (activeUser) => {
-    setUser(activeUser)
-  }
+    setUser(activeUser);
+  };
+
+  const handleLogout = () => {
+    // You can perform any necessary logout actions here
+    setUser(null); // Clear the user state to log them out
+    history.push("/login")
+  };
 
   const handleSearch = (searchQuery) => {
     fetch(`http://127.0.0.1:5555/api/albums?q=${searchQuery}`)
@@ -25,10 +42,15 @@ const App = () => {
         setSearchResults([]);
       });
   };
-console.log("will this work")
+
   return (
     <Router>
-      <Navbar handleSearch={handleSearch} /> 
+      <Navbar
+        handleSearch={handleSearch}
+        loginStatus={!!user} 
+        handleLogout={handleLogout} 
+        activeUser={user} 
+      />
       <Switch>
         <Route exact path="/">
           <Main />
@@ -51,5 +73,6 @@ console.log("will this work")
 };
 
 export default App;
+
 
 

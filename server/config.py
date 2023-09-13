@@ -13,10 +13,9 @@ from sqlalchemy import MetaData
 
 # Instantiate app, set attributes
 app = Flask(__name__)
-app.debug = True
+#app.debug = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'super_secret'
 app.json.compact = False
 
 # Define metadata, instantiate db
@@ -31,7 +30,9 @@ db.init_app(app)
 api = Api(app)
 
 # Instantiate CORS
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 #Instantiate Bcrypt
 bcrypt = Bcrypt(app)
+
+app.secret_key = b"\xfd\x90J\x8c'\xe9\x08o\xda\x15\x98\xd9@\xd7}7"

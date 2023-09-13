@@ -19,10 +19,9 @@ function Login({ loginStatus, handleLogin }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData.username, formData.password);
 
     try {
-      const response = await fetch('http://127.0.0.1:5555/api/login', {
+      const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -32,13 +31,14 @@ function Login({ loginStatus, handleLogin }) {
 
       if (response.ok) {
         const data = await response.json();
-        if (data) {
-          console.log(data);
+        if (data.user) {
           setLoginError(null);
-          handleLogin(data);
-          history.push(`/profile/${data.id}`);
+          handleLogin(data.user);
+          // Redirect to the user's profile page based on their username
+          history.push(`/profile/${data.user.username}`);
         } else {
           console.log('Login failed');
+          console.log('Response status:', response.status);
           setLoginError('Invalid username or password');
         }
       } else {
@@ -48,6 +48,27 @@ function Login({ loginStatus, handleLogin }) {
     } catch (error) {
       console.error('Error logging in: ', error);
       setLoginError('An error occurred while logging in');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5555/api/logout', {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        // Handle successful logout here (e.g., clear user data from state)
+        // You can also redirect the user to a different page or perform any other actions
+        // after successful logout.
+        console.log('Logged out successfully');
+      } else {
+        console.error('Logout failed with status: ' + response.status);
+        // Handle logout failure (e.g., show an error message)
+      }
+    } catch (error) {
+      console.error('Error logging out: ', error);
+      // Handle error (e.g., show an error message)
     }
   };
 

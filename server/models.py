@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from config import db, bcrypt
@@ -21,32 +20,17 @@ class User(db.Model, SerializerMixin):
     username = db.Column(db.String, unique=True, nullable=False)
     password = db.Column(db.String, nullable=False)
     profile_picture = db.Column(db.String)
-    #serialize_rules = ("-collections.user",)
-    #password_hash = db.Column(db.String)
 
-    # def get_password_hash(self):
-    #     return self.password_hash
-    
-    # def set_password_hash(self, password_string):
-    #     self.password_hash = bcrypt().generate_password_hash(password_string).decode("utf-8")
+    master_collection = db.relationship("Collection", uselist=False, back_populates="user")
 
-    # password_hash = property(get_password_hash, set_password_hash)
-
-    # def authenticate(self, password_string):
-    #     return bcrypt().check_password_hash(self.password_hash, password_string)
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode("utf-8")
 
     def check_password(self, password):
-        # Add Hash -> Hashing is always one-way
-        if self.password == password:
-            return True
-        else:
-            return False 
+       return bcrypt.check_password_hash(self.password, password) 
         
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username})>"
-
-    #collections = db.relationship("Collection", back_populates="user")
-    user_albums = association_proxy("collections", "collection_albums")
 
     @validates("username")
     def validates_username(self, key, new_username):
@@ -89,24 +73,6 @@ class User(db.Model, SerializerMixin):
             new_profile_picture = "https://cdn.vectorstock.com/i/preview-1x/77/30/default-avatar-profile-icon-grey-photo-placeholder-vector-17317730.jpg"
         return new_profile_picture
 
-class Collection(db.Model, SerializerMixin):
-    __tablename__ = "collection"
-
-    id = db.Column(db.Integer, primary_key=True)
-    collection_id = db.Column(db.Integer, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    album_id = db.Column(db.Integer, db.ForeignKey("album.id"), nullable=False)
-    # albums = association_proxy("collection_albums", "album")
-    # user = db.relationship("User", back_populates="collections")
-
-class CollectionAlbum(db.Model, SerializerMixin):
-    __tablename__ = "collection_album"
-    id = db.Column(db.Integer, primary_key=True)
-    album_id = db.Column(db.Integer, db.ForeignKey("album.id"), nullable=False)
-    collection_id = db.Column(
-        db.Integer, db.ForeignKey("collection.id"), nullable=False
-    )
-    
 class Album(db.Model, SerializerMixin):
     __tablename__ = "album"
 
@@ -120,39 +86,49 @@ class Album(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Album(id={self.id}, title={self.title}, artist={self.artist})>"
 
-    collection_albums = db.relationship("CollectionAlbum", backref="album")
+    # @validates("title")
+    # def validates_title(self, key, new_title):
+    #     if not new_title:
+    #         raise ValueError("Album title must be provided")
 
-    @validates("title")
-    def validates_title(self, key, new_title):
-        if not new_title:
-            raise ValueError("Album title must be provided")
-
-        existing_album = Album.query.filter_by(title=new_title).first()
+    #     existing_album = Album.query.filter_by(title=new_title).first()
         
-        if existing_album:
-            for collection_album in existing_album.collection_albums:
-                if collection_album.collection.user_id == self.collection_albums[0].collection.user_id:
-                    raise ValueError("An album with this title already exists for this user")
-        return new_title
+    #     if existing_album:
+    #         # Check if the album belongs to the same user
+    #         if self.id and self.id == existing_album.id:
+    #             return new_title
+    #         raise ValueError("An album with this title already exists for this user")
+    #     return new_title
 
-    @validates("image")
-    def validates_image(self, key, new_image):
-        if not new_image:
-            raise ValueError("An image URL must be provided")
+    # @validates("image")
+    # def validates_image(self, key, new_image):
+    #     if not new_image:
+    #         raise ValueError("An image URL must be provided")
 
-        if not new_image.startswith("http://") and not new_image.startswith("https://"):
-            raise ValueError("Invalid image URL format")
-        return new_image
+    #     if not new_image.startswith("http://") and not new_image.startswith("https://"):
+    #         raise ValueError("Invalid image URL format")
+    #     return new_image
 
-    @validates("artist")
-    def validates_artist(self, key, new_artist):
-        if not new_artist:
-            raise ValueError("An artist name must be provided")
-        return new_artist
+    # @validates("artist")
+    # def validates_artist(self, key, new_artist):
+    #     if not new_artist:
+    #         raise ValueError("An artist name must be provided")
+    #     return new_artist
 
-    @validates("genre")
-    def validates_genre(self, key, new_genre):
-        if not new_genre:
-            raise ValueError("A genre must be provided")
-        return new_genre
+    # @validates("genre")
+    # def validates_genre(self, key, new_genre):
+    #     if not new_genre:
+    #         raise ValueError("A genre must be provided")
+    #     return new_genre
+    
+class Collection(db.Model, SerializerMixin):
+    __tablename__ = "collection"
+
+    collection_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), default="Master Collection")
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+
+    user = db.relationship("User", back_populates="master_collection")
+
+
 
