@@ -8,7 +8,7 @@ const UserProfile = ({ activeUser }) => {
   useEffect(() => {
     if (activeUser) {
       // Fetch collections only if activeUser exists
-      fetch(`http://127.0.0.1:5555/api/users/${activeUser.id}/favorites`)
+      fetch(`/api/users/${activeUser.id}/favorites`)
         .then((response) => response.json())
         .then((data) => {
           setCollections(data);
@@ -27,28 +27,29 @@ const UserProfile = ({ activeUser }) => {
     return <div>Loading...</div>;
   }
 
-  if (!activeUser) {
-    return <div>User not found.</div>;
-  }
-
   return (
     <div className="container">
-      <h1 className="text-center mt-4">Welcome, {activeUser?.username}!</h1>
-      <h2>{activeUser?.username}'s Collection</h2>
-      <div className="row row-cols-1 row-cols-md-3 g-4">
-        {Array.isArray(collections) && collections.length > 0 ? (
-          collections.map((collection) => (
-            <div className="col" key={collection.id}>
-              <CollectionCard collection={collection} />
-            </div>
-          ))
-        ) : (
-          <p>Loading collections...</p>
-        )}
-      </div>
+      <h1 className="text-center mt-4">Welcome, {activeUser?.username || 'Guest'}!</h1>
+      {activeUser && (
+        <>
+          <h2> Your Collection</h2>
+          <div className="row row-cols-1 row-cols-md-3 g-4">
+            {Array.isArray(collections) && collections.length > 0 ? (
+              collections.map((collection) => (
+                <div className="col" key={collection.id}>
+                  <CollectionCard collection={collection} />
+                </div>
+              ))
+            ) : (
+              <p>This collection is empty!</p>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 };
 
 export default UserProfile;
+
 

@@ -86,40 +86,6 @@ class Album(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Album(id={self.id}, title={self.title}, artist={self.artist})>"
 
-    # @validates("title")
-    # def validates_title(self, key, new_title):
-    #     if not new_title:
-    #         raise ValueError("Album title must be provided")
-
-    #     existing_album = Album.query.filter_by(title=new_title).first()
-        
-    #     if existing_album:
-    #         # Check if the album belongs to the same user
-    #         if self.id and self.id == existing_album.id:
-    #             return new_title
-    #         raise ValueError("An album with this title already exists for this user")
-    #     return new_title
-
-    # @validates("image")
-    # def validates_image(self, key, new_image):
-    #     if not new_image:
-    #         raise ValueError("An image URL must be provided")
-
-    #     if not new_image.startswith("http://") and not new_image.startswith("https://"):
-    #         raise ValueError("Invalid image URL format")
-    #     return new_image
-
-    # @validates("artist")
-    # def validates_artist(self, key, new_artist):
-    #     if not new_artist:
-    #         raise ValueError("An artist name must be provided")
-    #     return new_artist
-
-    # @validates("genre")
-    # def validates_genre(self, key, new_genre):
-    #     if not new_genre:
-    #         raise ValueError("A genre must be provided")
-    #     return new_genre
     
 class Collection(db.Model, SerializerMixin):
     __tablename__ = "collection"

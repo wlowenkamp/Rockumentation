@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
-import { UserContext } from "./UserContext/User";
+import { UserContext, UserProvider } from "./UserContext/User";
 import Main from "./Main";
 import Users from "./Users";
 import UserProfile from "./UserProfile";
@@ -28,8 +28,7 @@ const App = () => {
   };
 
   const handleLogout = () => {
-    // You can perform any necessary logout actions here
-    setUser(null); // Clear the user state to log them out
+    setUser(null); 
     history.push("/login")
   };
 
@@ -45,6 +44,7 @@ const App = () => {
 
   return (
     <Router>
+      <UserProvider>
       <Navbar
         handleSearch={handleSearch}
         loginStatus={!!user} 
@@ -68,7 +68,9 @@ const App = () => {
           <UserProfile activeUser={user} />
         </Route>
       </Switch>
+      </UserProvider>
     </Router>
+
   );
 };
 

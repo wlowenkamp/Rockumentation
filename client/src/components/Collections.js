@@ -5,7 +5,7 @@ const Collections = () => {
   const [collections, setCollections] = useState([]);
 
   useEffect(() => {
-    fetch('http://127.0.0.1:5555/api/collections')
+    fetch('/api/collections')
       .then((response) => response.json())
       .then((data) => setCollections(data))
       .catch((error) => console.error('Error fetching collections:', error));

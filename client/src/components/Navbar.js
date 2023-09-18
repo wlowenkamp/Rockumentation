@@ -7,7 +7,7 @@ function Navbar({ loginStatus, handleLogout, activeUser, handleSearch }) {
 
   useEffect(() => {
     if (activeUser) {
-      fetch('http://127.0.0.1:5555/api/users')
+      fetch('/api/users')
         .then((response) => response.json())
         .then((data) => setActiveName(data.username))
         .catch((error) => console.log('Error: Could not fetch user data:', error));
@@ -41,8 +41,8 @@ function Navbar({ loginStatus, handleLogout, activeUser, handleSearch }) {
             {activeUser ? (
               <>
                 <li className="nav-item">
-                  <NavLink exact to="/collections" className="nav-link">
-                    Collections
+                  <NavLink xact to={`/profile/${activeUser}`} className="nav-link">
+                    Profile
                   </NavLink>
                 </li>
                 <li className="nav-item">

@@ -39,16 +39,16 @@ class UserRegister(Resource):
             print("Invalid request data - username or password missing")
             return make_response(jsonify({"message": "Invalid request data"}), 400)
 
-        # Check if the username already exists in the database
+        # Check for username
         existing_user = User.query.filter_by(username=username).first()
         if existing_user:
             print("Username already exists")
             return make_response(jsonify({"message": "Username already exists"}), 409)
             
-        # Hash the password using bcrypt
+        
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
-        # Create a new User object and add it to the database
+        
         new_user = User(
             username=username,
             password=hashed_password,

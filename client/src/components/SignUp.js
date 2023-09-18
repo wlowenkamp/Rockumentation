@@ -17,7 +17,7 @@ function SignUp() {
       profile_picture: profilePic,
     };
 
-    fetch('http://127.0.0.1:5555/api/register', {
+    fetch('/api/register', {
       method: 'POST',
       body: JSON.stringify(newUserData),
       headers: {
