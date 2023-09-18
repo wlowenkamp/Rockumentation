@@ -3,9 +3,11 @@ import AlbumCard from './AlbumCard';
 
 const Main = () => {
   const [albums, setAlbums] = useState([]);
+  const [masterCollection, setMasterCollection]= useState([]);
+  const [albumInCollection, setAlbumInCollection]= useState ({});
 
   useEffect(() => {
-    fetch('http://127.0.0.1:5555/api/albums')
+    fetch('/api/albums')
       .then((response) => response.json())
       .then((data) => setAlbums(data))
       .catch((error) => console.error('Error fetching albums:', error));

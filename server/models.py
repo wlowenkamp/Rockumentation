@@ -1,10 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import MetaData
 from sqlalchemy_serializer import SerializerMixin
-from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import validates
-from config import db
-
+from sqlalchemy import MetaData
+from config import db, bcrypt
 
 metadata = MetaData(
     naming_convention={
@@ -15,7 +13,6 @@ metadata = MetaData(
     }
 )
 
-
 class User(db.Model, SerializerMixin):
     __tablename__ = "user"
 
@@ -24,19 +21,16 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String, nullable=False)
     profile_picture = db.Column(db.String)
 
+    master_collection = db.relationship("Collection", uselist=False, back_populates="user")
 
+    def set_password(self, password):
+        self.password = bcrypt.generate_password_hash(password).decode("utf-8")
 
+    def check_password(self, password):
+       return bcrypt.check_password_hash(self.password, password) 
+        
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username})>"
-
-    # Relationship
-    collections = db.relationship("Collection", backref="user")
-
-    # Access Albums Through Collections
-
-    user_albums = association_proxy("collections", "collection_albums")
-
-    # User Validations
 
     @validates("username")
     def validates_username(self, key, new_username):
@@ -48,13 +42,13 @@ class User(db.Model, SerializerMixin):
             existing_user = User.query.filter(new_username == User.username).first()
             if existing_user:
                 raise ValueError("That username already exists")
-
             return new_username
 
     @validates("password")
     def validates_password(self, key, new_password):
         if not new_password:
             raise ValueError("Please set a password")
+
         has_letter = False
         has_number = False
 
@@ -71,38 +65,13 @@ class User(db.Model, SerializerMixin):
             raise ValueError(
                 "Password must contain at least one letter AND at least one number"
             )
-
         return new_password
-
+    
     @validates("profile_picture")
     def validates_profile_picture(self, key, new_profile_picture):
         if not new_profile_picture:
             new_profile_picture = "https://cdn.vectorstock.com/i/preview-1x/77/30/default-avatar-profile-icon-grey-photo-placeholder-vector-17317730.jpg"
-
         return new_profile_picture
-
-
-class Collection(db.Model, SerializerMixin):
-    __tablename__ = "collection"
-
-    id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String, nullable=False)
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    # Relationship
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-    collection_albums = db.relationship("CollectionAlbum", backref="collection")
-
-
-class CollectionAlbum(db.Model, SerializerMixin):
-    __tablename__ = "collection_album"
-    id = db.Column(db.Integer, primary_key=True)
-    album_id = db.Column(db.Integer, db.ForeignKey("album.id"), nullable=False)
-    collection_id = db.Column(
-        db.Integer, db.ForeignKey("collection.id"), nullable=False
-    )
-
-
 
 class Album(db.Model, SerializerMixin):
     __tablename__ = "album"
@@ -117,43 +86,15 @@ class Album(db.Model, SerializerMixin):
     def __repr__(self):
         return f"<Album(id={self.id}, title={self.title}, artist={self.artist})>"
 
-    # Relationship
-    collection_albums = db.relationship("CollectionAlbum", backref="album")
+    
+class Collection(db.Model, SerializerMixin):
+    __tablename__ = "collection"
 
-    # Album Validations
-    @validates("title")
-    def validates_title(self, key, new_title):
-        if not new_title:
-            raise ValueError("Album title must be provided")
+    collection_id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), default="Master Collection")
+    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-        existing_album = Album.query.filter_by(title=new_title).first()
-        
-        if existing_album:
-            for collection_album in existing_album.collection_albums:
-                if collection_album.collection.user_id == self.collection_albums[0].collection.user_id:
-                    raise ValueError("An album with this title already exists for this user")
-
-        return new_title
+    user = db.relationship("User", back_populates="master_collection")
 
 
-    @validates("image")
-    def validates_image(self, key, new_image):
-        if not new_image:
-            raise ValueError("An image URL must be provided")
 
-        if not new_image.startswith("http://") and not new_image.startswith("https://"):
-            raise ValueError("Invalid image URL format")
-
-        return new_image
-
-    @validates("artist")
-    def validates_artist(self, key, new_artist):
-        if not new_artist:
-            raise ValueError("An aritst name must be provided")
-        return new_artist
-
-    @validates("genre")
-    def validates_genre(self, key, new_genre):
-        if not new_genre:
-            raise ValueError("a genre must be provided")
-        return new_genre

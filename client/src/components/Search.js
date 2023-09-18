@@ -5,7 +5,7 @@ const Search = () => {
   const [searchResults, setSearchResults] = useState([]);
 
   const handleSearch = () => {
-    fetch(`http://127.0.0.1:5555/api/albums?q=${searchQuery}`)
+    fetch(`/api/albums?q=${searchQuery}`)
       .then((response) => response.json())
       .then((data) => setSearchResults(data))
       .catch((error) => {
