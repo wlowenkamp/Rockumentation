@@ -43,7 +43,6 @@ if __name__ == "__main__":
             new_user.set_password(user_data["password"]) 
 
             new_collection = Collection(
-                # title="Favorites",
                 user=new_user
             )
 

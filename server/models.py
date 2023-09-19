@@ -21,7 +21,7 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String, nullable=False)
     profile_picture = db.Column(db.String)
 
-    favorites_collection = db.relationship('Collection', uselist=False, back_populates='user')
+    
     collection = db.relationship('Collection', uselist=False, back_populates='user')
 
     # master_collection = db.relationship("Collection", uselist=False, back_populates="user")

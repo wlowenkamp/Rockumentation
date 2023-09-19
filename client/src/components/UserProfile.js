@@ -29,7 +29,7 @@ const UserProfile = ({ activeUser, isLoggedIn }) => {
 
   return (
     <div className="container">
-      <h1 className="text-center mt-4">Welcome, {activeUser?.username}!</h1>
+      <h1 className="text-center mt-4">Welcome, {activeUser?.username || "Guest"}!</h1>
       {activeUser && (
         <>
           <h2> Your Collection</h2>
