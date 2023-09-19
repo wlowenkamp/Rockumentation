@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import { UserContext } from './UserContext/User';
 
-function AlbumCard({ album, handleAddToCollection, handleRemoveFromCollection }) {
+function AlbumCard({ album, addingToCollection, handleRemoveFromCollection, user }) {
   const { activeUser } = useContext(UserContext);
 
   const [showDetails, setShowDetails] = useState(false);
@@ -28,14 +28,14 @@ function AlbumCard({ album, handleAddToCollection, handleRemoveFromCollection })
           </div>
         )}
 
-        {activeUser ? 
+        {user ? 
           <div>
             {inCollection ? (
               <button className="btn btn-primary" onClick={() => handleRemoveFromCollection(album.id)}>
                 Remove from Collection
               </button>
             ) : (
-              <button className="btn btn-primary" onClick={() => handleAddToCollection(album.id)}>
+              <button className="btn btn-primary" onClick={() => addingToCollection(album.id)}>
                 Add to Collection
               </button>
             )}
@@ -49,6 +49,7 @@ function AlbumCard({ album, handleAddToCollection, handleRemoveFromCollection })
 }
 
 export default AlbumCard;
+
 
 
 

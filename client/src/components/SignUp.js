@@ -1,21 +1,19 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function SignUp() {
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [profilePic, setProfilePic] = useState('');
+  const [profile_picture, setProfile_Picture] = useState('');
   const [signUpError, setSignUpError] = useState('');
   const [registrationSuccess, setRegistrationSuccess] = useState(false);
+  const newUserData = { username: username, password: password, profile_picture: profile_picture };
 
   function handleSubmit(event) {
     event.preventDefault();
-    const newUserData = {
-      username,
-      password,
-      profile_picture: profilePic,
-    };
 
     fetch('/api/register', {
       method: 'POST',
@@ -26,28 +24,17 @@ function SignUp() {
     })
       .then((response) => {
         if (!response.ok) {
-          throw new Error('Network response was not ok');
+          throw new Error('Registration failed. Please check your input.'); // Throw an error message instead
         }
         return response.json();
       })
-      .then((result) => {
-        console.log(result);
-        if (result.message === 'Registration successful') {
-          // Set registration success to true
-          setRegistrationSuccess(true);
+      .then(() => {
+        toast.success('Account created successfully!', { autoClose: 2000 });
 
-          // Redirect to the login page after a delay (optional)
-          setTimeout(() => {
-            history.push('/login');
-          }, 2000); // Redirect after 2 seconds (adjust as needed)
-        } else {
-          // Handle registration errors
-          setSignUpError('Registration failed. Please check your input.');
-        }
+        history.push('/login');
       })
       .catch((error) => {
-        console.error('Error:', error);
-        setSignUpError('An error occurred during registration.');
+        setSignUpError(error.message || 'Registration failed. Please check your input.');
       });
   }
 
@@ -55,6 +42,7 @@ function SignUp() {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
+          <ToastContainer />
           <h2>Sign Up</h2>
           {signUpError && <p className="text-danger">{signUpError}</p>}
           {registrationSuccess && (
@@ -90,15 +78,15 @@ function SignUp() {
               />
             </div>
             <div className="mb-3">
-              <label htmlFor="profilePic" className="form-label">
+              <label htmlFor="profile_picture" className="form-label">
                 Profile Picture URL:
               </label>
               <input
                 type="text"
                 className="form-control"
-                id="profilePic"
-                value={profilePic}
-                onChange={(e) => setProfilePic(e.target.value)}
+                id="profile_picture"
+                name="profile_picture"
+                onChange={(e) => setProfile_Picture(e.target.value)}
               />
             </div>
             <button type="submit" className="btn btn-primary">
@@ -112,6 +100,9 @@ function SignUp() {
 }
 
 export default SignUp;
+
+
+
 
 
 

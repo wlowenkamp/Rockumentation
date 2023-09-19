@@ -54,7 +54,7 @@ const App = () => {
       />
       <Switch>
         <Route exact path="/">
-          <Main />
+          <Main user={user} />
         </Route>
         <Route path="/login">
           <Login handleLogin={handleLogin} user={user} handleUser={handleUser} />
