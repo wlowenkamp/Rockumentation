@@ -28,28 +28,29 @@ if __name__ == "__main__":
 
         # Users
         users_data = [
-            {"username": "Wlowenkamp", "profile_picture": "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", "password": "password1"},
-            {"username": "Cmcgrath", "profile_picture": "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", "password": "password1"},
-            {"username": "MusicGuy", "profile_picture": "https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png", "password": "password1"},
+            {"username": "Wlowenkamp", "password": "password1", "profile_picture": "https://scontent.fosu2-1.fna.fbcdn.net/v/t1.6435-9/53333154_2378574502176834_2128324052295614464_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=174925&_nc_ohc=LnJ0jB5bwlMAX_fsl-m&_nc_ht=scontent.fosu2-1.fna&oh=00_AfCLtxsaf0qxX9WNHMW0RHv5Q-he7HXIoa2tlzikn9mWLw&oe=65302B0C"},
+            {"username": "Clowenkamp", "password": "password1", "profile_picture": "https://scontent.fosu2-2.fna.fbcdn.net/v/t1.6435-9/119816023_3536493099777858_4509614180732850408_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=KDPxhP00j30AX8kL8Gk&_nc_ht=scontent.fosu2-2.fna&oh=00_AfD4EzhhYDmjxM1jvkOwcUWMTIqDdZXuKK0xFOvSKyQcUA&oe=653145E6"},
+            {"username": "DannyDevito", "password": "password1", "profile_picture": "https://cdn.mos.cms.futurecdn.net/a9S8crNdUjgmaDGWQTbVVM-1920-80.jpg.webp"},
+
         ]
 
         # Seed Users and create "Master Collection" for each user
         for user_data in users_data:
             new_user = User(
                 username=user_data["username"],
-                profile_picture=user_data["profile_picture"],
+                profile_picture=user_data["profile_picture"]
             )
-            new_user.set_password(user_data["password"])
-            
+            new_user.set_password(user_data["password"]) 
 
+            new_collection = Collection(
+                # title="Favorites",
+                user=new_user
+            )
 
             db.session.add(new_user)
-            db.session.commit()  # Commit the user to get the auto-generated user ID
-
-            # Create the "Master Collection" for the user
-            new_collection = Collection(user_id=new_user.id)  # Let the database auto-generate collection_id
             db.session.add(new_collection)
             db.session.commit()
+
 
 
         print("Users and Master Collections seeded successfully")

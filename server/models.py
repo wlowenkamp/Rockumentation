@@ -21,13 +21,19 @@ class User(db.Model, SerializerMixin):
     password = db.Column(db.String, nullable=False)
     profile_picture = db.Column(db.String)
 
-    master_collection = db.relationship("Collection", uselist=False, back_populates="user")
+    favorites_collection = db.relationship('Collection', uselist=False, back_populates='user')
+    collection = db.relationship('Collection', uselist=False, back_populates='user')
+
+    # master_collection = db.relationship("Collection", uselist=False, back_populates="user")
 
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode("utf-8")
 
     def check_password(self, password):
-       return bcrypt.check_password_hash(self.password, password) 
+       return bcrypt.check_password_hash(self.password, password)
+
+    def authenticate(self, passed_string):
+        return bcrypt.check_password_hash(self.password, passed_string.encode("utf-8")) 
         
     def __repr__(self):
         return f"<User(id={self.id}, username={self.username})>"
@@ -90,11 +96,14 @@ class Album(db.Model, SerializerMixin):
 class Collection(db.Model, SerializerMixin):
     __tablename__ = "collection"
 
-    collection_id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(255), default="Master Collection")
+
+    name = db.Column(db.String(255), primary_key=True, default="Master Collection")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
 
-    user = db.relationship("User", back_populates="master_collection")
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user = db.relationship('User', back_populates='collection')
+
+
 
 
 

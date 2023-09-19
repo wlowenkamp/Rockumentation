@@ -1,55 +1,69 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { useHistory } from 'react-router-dom';
+import { UserContext } from './UserContext/User';
 
-function Login({ loginStatus, handleLogin }) {
+function Login({ loginStatus, handleLogin, user, handleUser }) {
   const history = useHistory();
-  const [formData, setFormData] = useState({
-    username: '',
-    password: '',
-  });
+  const [username, setUsername] = useState("")
+  const [password, setPassword] = useState("")
+  // const [formData, setFormData] = useState({
+  //   username: '',
+  //   password: '',
+  // });
   const [loginError, setLoginError] = useState(null);
+  // const {user, setUser} = useContext(UserContext);
 
-  const handleInputChange = (event) => {
-    const { name, value } = event.target;
-    setFormData({
-      ...formData,
-      [name]: value,
+  const handleInputChange = async () => {
+  
+
+  // const handleSubmit = async (event) => {
+  //   event.preventDefault();
+
+  try {
+    const response = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({username:username, password:password}),
     });
-  };
 
-  const handleSubmit = async (event) => {
-    event.preventDefault();
+    if (response.ok) {
+      // response.json().then(responseBody => {
+      //   setUser(responseBody)
+      //   history.push(`/profile/${data.user.username}`);
+      // })
 
-    try {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const data = await response.json();
+      if (response.status === 202) {
+        setLoginError(null);
+        handleLogin(data);
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.user) {
-          setLoginError(null);
-          handleLogin(data.user);
-          // Redirect to the user's profile page based on their username
-          history.push(`/profile/${data.user.username}`);
-        } else {
-          console.log('Login failed');
-          console.log('Response status:', response.status);
-          setLoginError('Invalid username or password');
+        const previous = history.location.state && history.location.state.from
+
+        if (previous && (previous !== "/api/login" && previous !== "/api/signup")) {
+          history.push(previous)
         }
+        else {
+          history.push("/profile/:id")
+        }
+        handleUser(data)
+
+        // history.push(`/profile/${data.username}`);
       } else {
-        console.log('HTTP request failed with status: ' + response.status);
+        console.log('Login failed');
+        console.log('Response status:', response.status);
         setLoginError('Invalid username or password');
       }
-    } catch (error) {
-      console.error('Error logging in: ', error);
-      setLoginError('An error occurred while logging in');
+    } else {
+      console.log('HTTP request failed with status: ' + response.status);
+      setLoginError('Invalid username or password');
     }
-  };
+  } catch (error) {
+    console.error('Error logging in: ', error);
+    setLoginError('An error occurred while logging in');
+  }
+
 
   const handleLogout = async () => {
     try {
@@ -58,30 +72,29 @@ function Login({ loginStatus, handleLogin }) {
       });
 
       if (response.ok) {
-        // Handle successful logout here (e.g., clear user data from state)
-        // You can also redirect the user to a different page or perform any other actions
-        // after successful logout.
+
         console.log('Logged out successfully');
       } else {
         console.error('Logout failed with status: ' + response.status);
-        // Handle logout failure (e.g., show an error message)
+
       }
     } catch (error) {
       console.error('Error logging out: ', error);
-      // Handle error (e.g., show an error message)
+
     }
   };
+}
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={(event) => event.preventDefault()}>
       <div>
         <label htmlFor="username">Username:</label>
         <input
           type="text"
           id="username"
           name="username"
-          value={formData.username}
-          onChange={handleInputChange}
+          value={username}
+          onChange={(event) => setUsername(event.target.value)}
           required
         />
       </div>
@@ -91,13 +104,13 @@ function Login({ loginStatus, handleLogin }) {
           type="password"
           id="password"
           name="password"
-          value={formData.password}
-          onChange={handleInputChange}
+          value={password}
+          onChange={(event) => setPassword(event.target.value)}
           required
         />
       </div>
       <div>
-        <button type="submit">Login</button>
+        <button type="submit" onClick={handleInputChange}>Login</button>
       </div>
       {loginError && <div>{loginError}</div>}
     </form>

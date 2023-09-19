@@ -2,9 +2,10 @@ import React, { useContext, useState } from 'react';
 import { UserContext } from './UserContext/User';
 
 function AlbumCard({ album, handleAddToCollection, handleRemoveFromCollection }) {
-  const { user } = useContext(UserContext);
+  const { activeUser } = useContext(UserContext);
 
   const [showDetails, setShowDetails] = useState(false);
+  const [inCollection, setInCollection] = useState(false);
 
   const handleViewDetails = () => {
     setShowDetails(!showDetails);
@@ -27,24 +28,28 @@ function AlbumCard({ album, handleAddToCollection, handleRemoveFromCollection })
           </div>
         )}
 
-        {user ? (
+        {activeUser ? 
           <div>
-            <button className="btn btn-success" onClick={() => handleAddToCollection(album.id)}>
-              Add to Collection
-            </button>
-            <button className="btn btn-danger" onClick={() => handleRemoveFromCollection(album.id)}>
-              Remove from Collection
-            </button>
+            {inCollection ? (
+              <button className="btn btn-primary" onClick={() => handleRemoveFromCollection(album.id)}>
+                Remove from Collection
+              </button>
+            ) : (
+              <button className="btn btn-primary" onClick={() => handleAddToCollection(album.id)}>
+                Add to Collection
+              </button>
+            )}
           </div>
-        ) : (
+         :  
           <p>Please log in to add or remove albums from your collection.</p>
-        )}
+        }
       </div>
     </div>
   );
 }
 
 export default AlbumCard;
+
 
 
 

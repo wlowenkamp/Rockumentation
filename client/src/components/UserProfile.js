@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import CollectionCard from './CollectionCard';
 
-const UserProfile = ({ activeUser }) => {
+const UserProfile = ({ activeUser, isLoggedIn }) => {
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +19,7 @@ const UserProfile = ({ activeUser }) => {
           setLoading(false);
         });
     } else {
-      setLoading(false); // Handle the case where activeUser is undefined
+      setLoading(false); 
     }
   }, [activeUser]);
 
@@ -29,7 +29,7 @@ const UserProfile = ({ activeUser }) => {
 
   return (
     <div className="container">
-      <h1 className="text-center mt-4">Welcome, {activeUser?.username || 'Guest'}!</h1>
+      <h1 className="text-center mt-4">Welcome, {activeUser?.username}!</h1>
       {activeUser && (
         <>
           <h2> Your Collection</h2>
