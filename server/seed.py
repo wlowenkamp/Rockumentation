@@ -88,7 +88,6 @@ if __name__ == "__main__":
             Album(title="The Suburbs", image="https://upload.wikimedia.org/wikipedia/en/8/81/Arcade_Fire_-_The_Suburbs.jpg", artist="Arcade Fire", genre="Indie Rock", release_year=2010),
             Album(title="AM", image="https://upload.wikimedia.org/wikipedia/commons/e/e7/%22AM%22_%28Arctic_Monkeys%29.jpg", artist="Arctic Monkeys", genre="Indie Rock", release_year=2013),
             Album(title="To Pimp a Butterfly", image="https://i.guim.co.uk/img/static/sys-images/Guardian/Pix/pictures/2015/3/11/1426099817173/f1efb3f4-9a6d-4f78-8ca8-594ab646d198-bestSizeAvailable.jpeg?width=465&dpr=1&s=none", artist="Kendrick Lamar", genre="Hip-Hop", release_year=2015),
-            Album(title="Random Access Memories", image="https://upload.wikimedia.org/wikipedia/commons/7/74/Daft_Punk_-_Random_Access_Memories.jpg", artist="Daft Punk", genre="Electronic", release_year=2013),
             Album(title="good kid, m.A.A.d city", image="https://m.media-amazon.com/images/I/51xrNHAW7mL._UF1000,1000_QL80_.jpg", artist="Kendrick Lamar", genre="Hip-Hop", release_year=2012),
             Album(title="Swimming", image="https://m.media-amazon.com/images/I/51814ZhkdtS.jpg", artist="Mac Miller", genre="Hip-Hop", release_year=2018),
             Album(title="Hot Fuss", image="https://upload.wikimedia.org/wikipedia/en/1/17/The_Killers_-_Hot_Fuss.png", artist="The Killers", genre="Alternative Rock", release_year=2004),

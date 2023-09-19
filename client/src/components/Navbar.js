@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 import Search from './Search';
 
-function Navbar({ loginStatus, handleLogout, activeUser, handleSearch }) {
+function Navbar({ loginStatus, activeUser, handleSearch, handleUser }) {
   const [activeName, setActiveName] = useState('');
-
+  const history = useHistory()
   useEffect(() => {
     if (activeUser) {
       fetch('/api/users')
@@ -13,6 +13,15 @@ function Navbar({ loginStatus, handleLogout, activeUser, handleSearch }) {
         .catch((error) => console.log('Error: Could not fetch user data:', error));
     }
   }, [activeUser]);
+  
+  const handleLogout = () => {
+    fetch('/api/logout', {
+      method : "DELETE",
+    }).then(() => {
+      handleUser(null);
+      history.push('/')
+    })
+  }
 
   return (
     <nav className="navbar navbar-expand-lg navbar-light bg-light">

@@ -65,24 +65,7 @@ function Login({ loginStatus, handleLogin, user, handleUser }) {
   }
 
 
-  const handleLogout = async () => {
-    try {
-      const response = await fetch('/api/logout', {
-        method: 'DELETE',
-      });
 
-      if (response.ok) {
-
-        console.log('Logged out successfully');
-      } else {
-        console.error('Logout failed with status: ' + response.status);
-
-      }
-    } catch (error) {
-      console.error('Error logging out: ', error);
-
-    }
-  };
 }
 
   return (
