@@ -13,7 +13,8 @@ const Users = () => {
 
   return (
     <div className="container">
-      <h1 className="text-center mt-4">Users</h1>
+      <h1 className="text-center mt-4">Rockumentation</h1>
+      <h2 className = "text-center mt-4"> Users</h2>
       <div className="row row-cols-1 row-cols-md-3 g-4">
         {users.map((user) => (
           <div className="col" key={user.id}>

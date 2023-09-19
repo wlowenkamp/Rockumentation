@@ -11,7 +11,9 @@ import Navbar from "./Navbar";
 const App = () => {
   const [searchResults, setSearchResults] = useState([]);
   const history = useHistory();
-  const {user, setUser} = useContext(UserContext);
+  const [user, setUser] = useState(null);
+  const handleUser = (user) => setUser(user)
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 
   useEffect(() => {
@@ -24,10 +26,13 @@ const App = () => {
   }, [setUser]);
 
   const handleLogin = (activeUser) => {
-    setUser(activeUser);
+    setIsLoggedIn(true)
+    setUser(activeUser)
+    console.log(activeUser)
   };
 
   const handleLogout = () => {
+    setIsLoggedIn(false)
     setUser(null); 
     history.push("/login")
   };
@@ -56,7 +61,7 @@ const App = () => {
           <Main />
         </Route>
         <Route path="/login">
-          <Login handleLogin={handleLogin} />
+          <Login handleLogin={handleLogin} user={user} handleUser={handleUser} />
         </Route>
         <Route path="/signup">
           <SignUp />
@@ -65,7 +70,7 @@ const App = () => {
           <Users />
         </Route>
         <Route path="/profile/:id">
-          <UserProfile activeUser={user} />
+          <UserProfile activeUser={user} isLoggedIn={isLoggedIn} />
         </Route>
       </Switch>
       </UserProvider>

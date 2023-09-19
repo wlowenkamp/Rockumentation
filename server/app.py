@@ -57,7 +57,7 @@ class UserRegister(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        serialized_user = new_user.to_dict(rules=("-id","master_collection"))
+        serialized_user = new_user.to_dict(rules=("-id"))
 
         response_data = {
             "message": "Registration successful",
@@ -75,23 +75,18 @@ class UserLogin(Resource):
         data = request.get_json()
         if not data:
             return make_response(jsonify({"message": "Missing request data"}), 400)
-
-        username = data.get("username")
-        password_from_payload = data.get("password")  # Get the plaintext password from the payload
+         
+        username = data["username"]
+        password_from_payload = data["password"]
 
         if not username or not password_from_payload:
             return make_response(jsonify({"message": "Invalid request data"}), 400)
 
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter(User.id == session.get("user_id")).first()
 
-        if user and bcrypt.check_password_hash(user.password, password_from_payload):
-            # Login successful
-            serialized_user = user.to_dict(rules=("-profile_picture", "-master_collection"))
+        if user.authenticate(password_from_payload):
             session["user_id"] = user.id
-            print(session)
-            return make_response(jsonify({"message": "Login successful", "user": serialized_user}), 200)
-        else:
-            return make_response(jsonify({"message": "Invalid username or password"}), 401)
+            return make_response(user.to_dict(rules =("-id" , "-collection", "-favorites_collection", "-password", "-profile_picture",)), 202)
         
 api.add_resource(UserLogin, "/api/login")
 
@@ -125,7 +120,7 @@ class Users(Resource):
 
     def get(self):
         users = User.query.all()
-        serialized_users = [user.to_dict(rules=("-id", "-master_collection")) for user in users]
+        serialized_users = [user.to_dict(rules=("-id", "-favorites_collection", "-collection",)) for user in users]
         return make_response(jsonify(serialized_users), 200)
     
     def post(self):
@@ -141,7 +136,7 @@ class Users(Resource):
         
         db.session.add(user)
         db.session.commit()
-        return make_response(user.to_dict(rules=("-id", "-master_collection")), 201)
+        return make_response(user.to_dict(rules=("-id", "-favorites_collection", "-collection",)), 201)
 
 api.add_resource(Users, "/api/users")
 
@@ -155,6 +150,7 @@ class UserProfile(Resource):
                 "id": user.id,
                 "username": user.username,
                 "profile_picture": user.profile_picture,
+                "favorites": [album.to_dict() for album in user.favorites]
             }
             return make_response(serialized_user, 200)
         else:
@@ -163,23 +159,23 @@ class UserProfile(Resource):
 api.add_resource(UserProfile, "/api/profile/<int:user_id>")
 
 #Get User Collections
-class Collections(Resource):
-    def get(self, user_id):
-        collections = Collection.query.filter_by(user_id=user_id)
-        serialized_collections = []
+# class Collections(Resource):
+#     def get(self, user_id):
+#         collections = Collection.query.filter_by(user_id=user_id)
+#         serialized_collections = []
 
-        for collection in collections:
-            serialized_collection = {
-                "id": collection.id,
-                "title": collection.title,
-                "user_id": collection.user_id,
-                "albums": [album.to_dict() for album in collection.albums] 
-            }
-            serialized_collections.append(serialized_collection)
+#         for collection in collections:
+#             serialized_collection = {
+#                 "id": collection.id,
+#                 "title": collection.title,
+#                 "user_id": collection.user_id,
+#                 "albums": [album.to_dict() for album in collection.albums] 
+#             }
+#             serialized_collections.append(serialized_collection)
 
-        return make_response(serialized_collections, 200)
+#         return make_response(serialized_collections, 200)
     
-api.add_resource(Collections, "/api/users/<int:user_id>/collections")
+# api.add_resource(Collections, "/api/users/<int:user_id>/collections")
 
 # Get User Favorites
 class UserFavorites(Resource):
@@ -220,44 +216,42 @@ class AlbumById(Resource):
      return make_response(album.to_dict(), 200)
 api.add_resource(AlbumById, "/api/albums/<int:album_id>")
 
-# Add Album to collection
-class AddAlbumToCollection(Resource):
-    def post(self, collection_id, album_id):
-        collection = Collection.query.get(collection_id)
+# Add Album to Favorites
+class AddAlbumToFavorites(Resource):
+    def post(self, user_id, album_id):
+        user = User.query.get(user_id)
         album = Album.query.get(album_id)
         
-        if not album:
-            return {"message": "Album not found"}, 404
+        if not user or not album:
+            return {"message": "User or Album not found"}, 404
 
-        if collection and album:
-            if album not in collection.albums:
-                collection.albums.append(album)
-                db.session.commit()
-                return {"message": "Album added to collection"}, 201
-            else:
-                return {"message": "Album already in collection"}, 409
+        if album not in user.favorites:
+            user.favorites.append(album)
+            db.session.commit()
+            return {"message": "Album added to favorites"}, 201
         else:
-            return {"message": "Collection or Album not found"}, 404
+            return {"message": "Album already in favorites"}, 409
 
-api.add_resource(AddAlbumToCollection, "/api/collections/<int:collection_id>/albums/<int:album_id>")
+api.add_resource(AddAlbumToFavorites, "/api/users/<int:user_id>/favorites/albums/<int:album_id>")
 
-# Remove Album from collection
-class RemoveAlbumFromCollection(Resource):
-    def delete(self, collection_id, album_id):
-        collection = Collection.query.get(collection_id)
+# Remove Album from Favorites
+class RemoveAlbumFromFavorites(Resource):
+    def delete(self, user_id, album_id):
+        user = User.query.get(user_id)
         album = Album.query.get(album_id)
 
-        if not collection or not album:
-            return {"message": "Collection or Album not found"}, 404
+        if not user or not album:
+            return {"message": "User or Album not found"}, 404
 
-        if album in collection.albums:
-            collection.albums.remove(album)
+        if album in user.favorites:
+            user.favorites.remove(album)
             db.session.commit()
-            return {"message": "Album removed from collection"}, 200
+            return {"message": "Album removed from favorites"}, 200
         else:
-            return {"message": "Album not in collection"}, 404
+            return {"message": "Album not in favorites"}, 404
 
-api.add_resource(RemoveAlbumFromCollection, "/api/collections/<int:collection_id>/albums/<int:album_id>")
+api.add_resource(RemoveAlbumFromFavorites, "/api/users/<int:user_id>/favorites/albums/<int:album_id>")
+
 
 
 
