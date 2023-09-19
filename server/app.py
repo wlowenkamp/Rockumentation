@@ -73,20 +73,19 @@ api.add_resource(UserRegister, "/api/register")
 class UserLogin(Resource):
     def post(self):
         data = request.get_json()
-        if not data:
-            return make_response(jsonify({"message": "Missing request data"}), 400)
-         
+        # if not data:
+        #     return make_response(jsonify({"message": "Missing request data"}), 400)         
         username = data["username"]
-        password_from_payload = data["password"]
+        password = data["password"]
 
-        if not username or not password_from_payload:
-            return make_response(jsonify({"message": "Invalid request data"}), 400)
+        # if not username or not password:
+        #     return make_response(jsonify({"message": "Invalid request data"}), 400)
 
-        user = User.query.filter(User.id == session.get("user_id")).first()
+        user = User.query.filter_by(username=username).first()
 
-        if user.authenticate(password_from_payload):
+        if user.authenticate(password):
             session["user_id"] = user.id
-            return make_response(user.to_dict(rules =("-id" , "-collection", "-favorites_collection", "-password", "-profile_picture",)), 202)
+            return make_response(user.to_dict(only =("username",)), 202)
         
 api.add_resource(UserLogin, "/api/login")
 
@@ -107,8 +106,8 @@ api.add_resource(CheckSession, "/api/check_session")
 
 class Logout(Resource):
     def delete(self):
-        session.pop("user_id", None)
-        return {"message": "204: No Content"}, 204
+        session["user_id"] = None
+        return make_response("", 204)
 
 api.add_resource(Logout, "/api/logout")
 

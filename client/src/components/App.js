@@ -14,7 +14,7 @@ const App = () => {
   const [user, setUser] = useState(null);
   const handleUser = (user) => setUser(user)
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-
+  
 
   useEffect(() => {
     fetch("/api/check_session")
@@ -31,14 +31,10 @@ const App = () => {
     console.log(activeUser)
   };
 
-  const handleLogout = () => {
-    setIsLoggedIn(false)
-    setUser(null); 
-    history.push("/login")
-  };
+
 
   const handleSearch = (searchQuery) => {
-    fetch(`http://127.0.0.1:5555/api/albums?q=${searchQuery}`)
+    fetch(`/api/albums?q=${searchQuery}`)
       .then((response) => response.json())
       .then((data) => setSearchResults(data))
       .catch((error) => {
@@ -52,8 +48,8 @@ const App = () => {
       <UserProvider>
       <Navbar
         handleSearch={handleSearch}
-        loginStatus={!!user} 
-        handleLogout={handleLogout} 
+        loginStatus={!!user}
+        handleUser={handleUser}  
         activeUser={user} 
       />
       <Switch>
