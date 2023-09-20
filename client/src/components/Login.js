@@ -1,103 +1,98 @@
-import { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { UserContext } from './UserContext/User';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
-function Login({ loginStatus, handleLogin, user, handleUser }) {
+function Login({ handleLogin, handleUser }) {
   const history = useHistory();
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  // const [formData, setFormData] = useState({
-  //   username: '',
-  //   password: '',
-  // });
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
-  // const {user, setUser} = useContext(UserContext);
 
   const handleInputChange = async () => {
-  
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username: username, password: password }),
+      });
 
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
+      if (response.ok) {
+        const data = await response.json();
+        if (response.status === 202) {
+          setLoginError(null);
+          handleLogin(data);
 
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({username:username, password:password}),
-    });
+          const previous = history.location.state && history.location.state.from;
 
-    if (response.ok) {
-      // response.json().then(responseBody => {
-      //   setUser(responseBody)
-      //   history.push(`/profile/${data.user.username}`);
-      // })
+          if (previous && (previous !== "/api/login" && previous !== "/api/signup")) {
+            history.push(previous);
+          } else {
+            history.push("/profile/:id");
+          }
+          handleUser(data);
 
-      const data = await response.json();
-      if (response.status === 202) {
-        setLoginError(null);
-        handleLogin(data);
-
-        const previous = history.location.state && history.location.state.from
-
-        if (previous && (previous !== "/api/login" && previous !== "/api/signup")) {
-          history.push(previous)
+          // Display success toast
+          toast.success('Login successful!', { autoClose: 2000 });
+        } else {
+          setLoginError('Invalid username or password');
         }
-        else {
-          history.push("/profile/:id")
-        }
-        handleUser(data)
-
-        // history.push(`/profile/${data.username}`);
       } else {
-        console.log('Login failed');
-        console.log('Response status:', response.status);
         setLoginError('Invalid username or password');
       }
-    } else {
-      console.log('HTTP request failed with status: ' + response.status);
-      setLoginError('Invalid username or password');
+    } catch (error) {
+      console.error('Error logging in: ', error);
+      setLoginError('An error occurred while logging in');
     }
-  } catch (error) {
-    console.error('Error logging in: ', error);
-    setLoginError('An error occurred while logging in');
-  }
-
-
-
-}
+  };
 
   return (
-    <form onSubmit={(event) => event.preventDefault()}>
-      <div>
-        <label htmlFor="username">Username:</label>
-        <input
-          type="text"
-          id="username"
-          name="username"
-          value={username}
-          onChange={(event) => setUsername(event.target.value)}
-          required
-        />
+    <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h1 className="text-center mt-4">Rockumentation</h1>
+          <h2 className="text-center mt-4">Login</h2>
+          <ToastContainer />
+          <form onSubmit={(event) => event.preventDefault()} className="text-center">
+            <div className="mb-3">
+              <label htmlFor="username" className="form-label">
+                Username:
+              </label>
+              <input
+                type="text"
+                className="form-control"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </div>
+            <div className="mb-3">
+              <label htmlFor="password" className="form-label">
+                Password:
+              </label>
+              <input
+                type="password"
+                className="form-control"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
+            <button type="submit" className="btn btn-dark" onClick={handleInputChange}>
+              Login
+            </button>
+          </form>
+          {loginError && <div className="text-danger">{loginError}</div>}
+        </div>
       </div>
-      <div>
-        <label htmlFor="password">Password:</label>
-        <input
-          type="password"
-          id="password"
-          name="password"
-          value={password}
-          onChange={(event) => setPassword(event.target.value)}
-          required
-        />
-      </div>
-      <div>
-        <button type="submit" onClick={handleInputChange}>Login</button>
-      </div>
-      {loginError && <div>{loginError}</div>}
-    </form>
+    </div>
   );
 }
 
 export default Login;
+
+

@@ -1,5 +1,5 @@
 {
-  "proxy" : "http://127.0.0.1:5555",
+  "proxy": "http://127.0.0.1:5555",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

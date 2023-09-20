@@ -57,7 +57,7 @@ class UserRegister(Resource):
         db.session.add(new_user)
         db.session.commit()
 
-        serialized_user = new_user.to_dict(rules=("-id"))
+        serialized_user = new_user.to_dict(rules=("-id", "-collection"))
 
         response_data = {
             "message": "Registration successful",

@@ -57,7 +57,7 @@ if __name__ == "__main__":
 
         #Albums
         album_data = [
-            Album(title="Thriller", image="https://www.albumartexchange.com/coverart/gallery/mi/michaeljackson_thriller_d33u.jpg", artist="Michael Jackson", genre="Pop", release_year=1982),
+            Album(title="Thriller", image="https://upload.wikimedia.org/wikipedia/en/thumb/5/55/Michael_Jackson_-_Thriller.png/220px-Michael_Jackson_-_Thriller.png", artist="Michael Jackson", genre="Pop", release_year=1982),
             Album(title="The Dark Side of the Moon", image="https://upload.wikimedia.org/wikipedia/commons/c/c7/The_Dark_Side_of_the_Moon_Cover.svg", artist="Pink Floyd", genre="Progressive Rock", release_year=1973),
             Album(title="Abbey Road", image="https://upload.wikimedia.org/wikipedia/en/4/42/Beatles_-_Abbey_Road.jpg", artist="The Beatles", genre="Rock", release_year=1969),
             Album(title="Hotel California", image="https://upload.wikimedia.org/wikipedia/en/4/49/Hotelcalifornia.jpg", artist="Eagles", genre="Rock", release_year=1976),
@@ -103,10 +103,11 @@ if __name__ == "__main__":
             Album(title="Brothers", image="https://upload.wikimedia.org/wikipedia/en/9/93/The_Black_Keys_-_Brothers.jpg", artist="The Black Keys", genre="Blues Rock", release_year=2010),
             Album(title="Elephant", image="https://upload.wikimedia.org/wikipedia/en/thumb/1/11/Elephant%2C_The_White_Stripes.png/220px-Elephant%2C_The_White_Stripes.png", artist="The White Stripes", genre="Alternative Rock", release_year=2003),
             Album(title="Vessel", image="https://upload.wikimedia.org/wikipedia/en/2/20/Vessel_by_Twenty_One_Pilots.jpg", artist="Twenty One Pilots", genre="Indie Rock", release_year=2013),
-            Album(title="Blonde", image="https://upload.wikimedia.org/wikipedia/en/7/70/Childish-gambino-because-the-internet.gif", artist="Frank Ocean", genre="R&B", release_year=2016),
-            Album(title="Because the Internet", image="https://upload.wikimedia.org/wikipedia/en/e/ea/Blackparadecover.jpg", artist="Childish Gambino", genre="Hip-Hop", release_year=2013),
-            Album(title="The Black Parade", image="https://upload.wikimedia.org/wikipedia/en/2/28/Channel_ORANGE.jpg", artist="My Chemical Romance", genre="Alternative Rock", release_year=2006),
+            Album(title="Blonde", image="https://upload.wikimedia.org/wikipedia/en/a/a0/Blonde_-_Frank_Ocean.jpeg", artist="Frank Ocean", genre="R&B", release_year=2016),
+            Album(title="Because the Internet", image="https://static.thcdn.com/images/large/original/productimg/1600/1600/11743734-1084574251156722.jpg", artist="Childish Gambino", genre="Hip-Hop", release_year=2013),
+            Album(title="The Black Parade", image="https://upload.wikimedia.org/wikipedia/en/e/ea/Blackparadecover.jpg", artist="My Chemical Romance", genre="Alternative Rock", release_year=2006),
             Album(title="Legend", image="https://upload.wikimedia.org/wikipedia/en/c/c2/BobMarley-Legend.jpg", artist="Bob Marley and The Wailers", genre="Reggae", release_year=1977),
+            Album(title="Don't Forget About Me, Demos", image="https://upload.wikimedia.org/wikipedia/en/b/b2/Don%27t_forget_about_me%2C_demos.jpeg", artist="Dominic Fike", genre="Pop", release_year=2018),
         ]
 
         # Seed albums

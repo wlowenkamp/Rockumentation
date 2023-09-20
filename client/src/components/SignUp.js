@@ -9,48 +9,56 @@ function SignUp() {
   const [password, setPassword] = useState('');
   const [profile_picture, setProfile_Picture] = useState('');
   const [signUpError, setSignUpError] = useState('');
-  const [registrationSuccess, setRegistrationSuccess] = useState(false);
-  const newUserData = { username: username, password: password, profile_picture: profile_picture };
 
-  function handleSubmit(event) {
+  const handleSuccess = () => {
+    toast.success('Account created successfully!', { autoClose: 2000 });
+    history.push('/login');
+  };
+
+  const handleErrorResponse = (error) => {
+    const errorMessage = error.message || 'Registration failed. Please check your input.';
+    toast.error(errorMessage);
+    setSignUpError(errorMessage);
+  };
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
-    fetch('/api/register', {
-      method: 'POST',
-      body: JSON.stringify(newUserData),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error('Registration failed. Please check your input.'); // Throw an error message instead
-        }
-        return response.json();
-      })
-      .then(() => {
-        toast.success('Account created successfully!', { autoClose: 2000 });
-
-        history.push('/login');
-      })
-      .catch((error) => {
-        setSignUpError(error.message || 'Registration failed. Please check your input.');
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        body: JSON.stringify({ username, password, profile_picture }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-  }
+
+      if (response.status === 409) {
+        throw new Error('Username already exists');
+      }
+      if (response.status === 400) {
+        throw new Error('Password must contain letters and numbers');
+      }
+      if (!response.ok) {
+        throw new Error('Registration failed. Please check your input.');
+      }
+
+      await response.json();
+      handleSuccess();
+    } catch (error) {
+      handleErrorResponse(error);
+    }
+  };
 
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
+          <h1 className="text-center mt-4">Rockumentation</h1>
+          <h2 className="text-center mt-4">Sign Up</h2>
           <ToastContainer />
-          <h2>Sign Up</h2>
           {signUpError && <p className="text-danger">{signUpError}</p>}
-          {registrationSuccess && (
-            <div className="alert alert-success" role="alert">
-              Account created successfully!
-            </div>
-          )}
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="text-center">
             <div className="mb-3">
               <label htmlFor="username" className="form-label">
                 Username:
@@ -89,7 +97,7 @@ function SignUp() {
                 onChange={(e) => setProfile_Picture(e.target.value)}
               />
             </div>
-            <button type="submit" className="btn btn-primary">
+            <button type="submit" className="btn btn-dark">
               Sign Up
             </button>
           </form>
@@ -100,6 +108,9 @@ function SignUp() {
 }
 
 export default SignUp;
+
+
+
 
 
 
