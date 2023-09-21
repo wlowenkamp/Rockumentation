@@ -4,17 +4,17 @@ import Search from './Search';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-function Navbar({ loginStatus, activeUser, handleSearch, handleUser }) {
+function Navbar({ loginStatus, user, handleSearch, handleUser }) {
 const [activeName, setActiveName] = useState('');
   const history = useHistory()
   useEffect(() => {
-    if (activeUser) {
+    if (user) {
       fetch('/api/users')
         .then((response) => response.json())
         .then((data) => setActiveName(data.username))
         .catch((error) => console.log('Error: Could not fetch user data:', error));
     }
-  }, [activeUser]);
+  }, [user]);
   
   const handleLogout = () => {
     fetch('/api/logout', {
@@ -55,11 +55,11 @@ const [activeName, setActiveName] = useState('');
                 Users
               </NavLink>
             </li>
-            {activeUser ? (
+            {user ? (
               <>
                 <li className="nav-item">
-                  <NavLink exact to={`/profile/${activeUser}`} className="nav-link">
-                  {activeUser.username}'s Profile
+                  <NavLink exact to={`/profile/${user}`} className="nav-link">
+                  {user.username}'s Profile
                   </NavLink>
                 </li>
                 <li className="nav-item">

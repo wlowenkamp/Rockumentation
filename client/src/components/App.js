@@ -25,10 +25,10 @@ const App = () => {
       });
   }, [setUser]);
 
-  const handleLogin = (activeUser) => {
+  const handleLogin = (user) => {
     setIsLoggedIn(true)
-    setUser(activeUser)
-    console.log(activeUser)
+    setUser(user)
+    console.log(user)
   };
 
 
@@ -50,7 +50,7 @@ const App = () => {
         handleSearch={handleSearch}
         loginStatus={!!user}
         handleUser={handleUser}  
-        activeUser={user} 
+        user={user} 
       />
       <Switch>
         <Route exact path="/">
@@ -66,7 +66,7 @@ const App = () => {
           <Users />
         </Route>
         <Route path="/profile/:id">
-          <UserProfile activeUser={user} isLoggedIn={isLoggedIn} />
+          <UserProfile user={user} isLoggedIn={isLoggedIn} />
         </Route>
       </Switch>
       </UserProvider>
@@ -76,6 +76,9 @@ const App = () => {
 };
 
 export default App;
+
+
+
 
 
 

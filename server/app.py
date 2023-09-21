@@ -145,13 +145,7 @@ class UserProfile(Resource):
     def get(self, user_id):
         user = User.query.get(user_id)
         if user:
-            serialized_user = {
-                "id": user.id,
-                "username": user.username,
-                "profile_picture": user.profile_picture,
-                # "collection": [album.to_dict() for album in user.collection]
-            }
-            return make_response(serialized_user, 200)
+            return make_response(user.to_dict(only=("id", "username", "profile_picture",)), 201)
         else:
             return {"message": "User not found"}, 404
 
