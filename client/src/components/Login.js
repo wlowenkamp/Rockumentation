@@ -30,7 +30,7 @@ function Login({ handleLogin, handleUser, user }) {
           if (previous && (previous !== "/api/login" && previous !== "/api/signup")) {
             history.push(previous);
           } else {
-            history.push(`/profile/${user.id}`);
+            history.push(`/profile/${data.id}`);
           }
           handleUser(data);
 

@@ -52,7 +52,7 @@ const UserProfile = ({ user, isLoggedIn,}) => {
   useEffect(() => {
     if (user) {
 
-      fetch(fetch(`/api/users/${user.id}/collection`))
+      fetch(`/api/users/${user.id}/collection`)
         .then((response) => response.json())
         .then((data) => {
           setCollections(data);
