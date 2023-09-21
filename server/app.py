@@ -149,32 +149,13 @@ class UserProfile(Resource):
                 "id": user.id,
                 "username": user.username,
                 "profile_picture": user.profile_picture,
-                "collection": [album.to_dict() for album in user.collection]
+                # "collection": [album.to_dict() for album in user.collection]
             }
             return make_response(serialized_user, 200)
         else:
             return {"message": "User not found"}, 404
 
 api.add_resource(UserProfile, "/api/profile/<int:user_id>")
-
-#Get User Collections
-# class Collections(Resource):
-#     def get(self, user_id):
-#         collections = Collection.query.filter_by(user_id=user_id)
-#         serialized_collections = []
-
-#         for collection in collections:
-#             serialized_collection = {
-#                 "id": collection.id,
-#                 "title": collection.title,
-#                 "user_id": collection.user_id,
-#                 "albums": [album.to_dict() for album in collection.albums] 
-#             }
-#             serialized_collections.append(serialized_collection)
-
-#         return make_response(serialized_collections, 200)
-    
-# api.add_resource(Collections, "/api/users/<int:user_id>/collections")
 
 # Get User Collection
 class UserCollection(Resource):
@@ -251,8 +232,27 @@ class RemoveAlbumFromCollection(Resource):
 
 api.add_resource(RemoveAlbumFromCollection, "/api/users/<int:user_id>/collection/albums/<int:album_id>")
 
+# Update Profile Pic
+class UpdateProfilePicture(Resource):
+    def patch(self, user_id):
+        user = User.query.get(user_id)
+
+        if not user:
+            return {"message": "User not found"}, 404
+
+        new_profile_picture = request.json.get("profile_picture")
 
 
+        user.profile_picture = new_profile_picture
+
+
+        db.session.commit()
+
+
+        return {"message": "Profile picture updated successfully", "user": user.to_dict(only=("id", "profile_picture"))}
+
+
+api.add_resource(UpdateProfilePicture, "/api/profile/<int:user_id>/profile_picture")
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

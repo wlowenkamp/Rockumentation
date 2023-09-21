@@ -99,8 +99,6 @@ class Collection(db.Model, SerializerMixin):
 
     name = db.Column(db.String(255), primary_key=True, default="Master Collection")
     user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     user = db.relationship('User', back_populates='collection')
 
 
