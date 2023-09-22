@@ -73,21 +73,20 @@ api.add_resource(UserRegister, "/api/register")
 class UserLogin(Resource):
     def post(self):
         data = request.get_json()
-        # if not data:
-        #     return make_response(jsonify({"message": "Missing request data"}), 400)         
         username = data["username"]
         password = data["password"]
-
-        # if not username or not password:
-        #     return make_response(jsonify({"message": "Invalid request data"}), 400)
 
         user = User.query.filter_by(username=username).first()
 
         if user.authenticate(password):
             session["user_id"] = user.id
-            return make_response(user.to_dict(only =("username",)), 202)
-        
+            user_data = user.to_dict(only=("username", "profile_picture"))
+            return make_response(user_data, 202)
+        else:
+            return {"message": "Invalid username or password"}, 401
+
 api.add_resource(UserLogin, "/api/login")
+
 
 #Check Session
 class CheckSession(Resource):
@@ -96,7 +95,7 @@ class CheckSession(Resource):
         
         user = User.query.filter(User.id==session.get('user_id')).first()
         if user:
-            return make_response(user.to_dict(only=("id","username")), 200)
+            return make_response(user.to_dict(only=("id","username", "profile_picture")), 200)
         return {'message': 'Not logged in'}, 401
     
 
@@ -140,64 +139,37 @@ class Users(Resource):
 api.add_resource(Users, "/api/users")
 
 
-#Get User Profile
+# Get User Profile
 class UserProfile(Resource):
-    def get(self, user_id):
-        user = User.query.get(user_id)
+    def get(self, username):
+        user = User.query.filter_by(username=username).first()
         if user:
-            serialized_user = {
-                "id": user.id,
-                "username": user.username,
-                "profile_picture": user.profile_picture,
-                "collection": [album.to_dict() for album in user.collection]
-            }
-            return make_response(serialized_user, 200)
+            return make_response(user.to_dict(only=("id", "username", "profile_picture")), 201)
         else:
             return {"message": "User not found"}, 404
 
-api.add_resource(UserProfile, "/api/profile/<int:user_id>")
 
-#Get User Collections
-# class Collections(Resource):
-#     def get(self, user_id):
-#         collections = Collection.query.filter_by(user_id=user_id)
-#         serialized_collections = []
-
-#         for collection in collections:
-#             serialized_collection = {
-#                 "id": collection.id,
-#                 "title": collection.title,
-#                 "user_id": collection.user_id,
-#                 "albums": [album.to_dict() for album in collection.albums] 
-#             }
-#             serialized_collections.append(serialized_collection)
-
-#         return make_response(serialized_collections, 200)
-    
-# api.add_resource(Collections, "/api/users/<int:user_id>/collections")
+api.add_resource(UserProfile, "/api/profile/<string:username>")
 
 # Get User Collection
 class UserCollection(Resource):
-    def get(self, user_id):
-        user = User.query.get(user_id)
+    def get(self, username):
+        user = User.query.filter_by(username=username).first()
         if not user:
             return {"message": "User not found"}, 404
 
-        collection = []  
-        serialized_collection = []
+        collection = user.collection
 
-        for collection in collection:
-            serialized_collection = {
-                "id": collection.id,
-                "title": collection.title,
-                "user_id": collection.user_id,
-                "albums": [album.to_dict() for album in collection.albums]
-            }
-            serialized_collection.append(serialized_collection)
+        collection_data = collection.to_dict()
 
-        return make_response(serialized_collection, 200)
+        collection_data["user_id"] = user.id 
 
-api.add_resource(UserCollection, "/api/users/<int:user_id>/collection", methods=["GET"])
+
+        return make_response(collection_data, 200)
+
+api.add_resource(UserCollection, "/api/users/<string:username>/collection", methods=["GET"])
+
+
    
 #Get All Albums
 class Albums(Resource):
@@ -231,7 +203,7 @@ class AddAlbumToCollection(Resource):
         else:
             return {"message": "Album already in collection"}, 409
 
-api.add_resource(AddAlbumToCollection, "/api/users/<int:user_id>/collection/albums/<int:album_id>")
+api.add_resource(AddAlbumToCollection, "/api/users/<string:username>/collection/albums/<int:album_id>")
 
 # Remove Album from Collection
 class RemoveAlbumFromCollection(Resource):
@@ -249,10 +221,29 @@ class RemoveAlbumFromCollection(Resource):
         else:
             return {"message": "Album not in collection"}, 404
 
-api.add_resource(RemoveAlbumFromCollection, "/api/users/<int:user_id>/collection/albums/<int:album_id>")
+api.add_resource(RemoveAlbumFromCollection, "/api/users/<string:username>/collection/albums/<int:album_id>")
+
+# Update Profile Pic
+class UpdateProfilePicture(Resource):
+    def patch(self, user_id):
+        user = User.query.get(user_id)
+
+        if not user:
+            return {"message": "User not found"}, 404
+
+        new_profile_picture = request.json.get("profile_picture")
 
 
+        user.profile_picture = new_profile_picture
 
+
+        db.session.commit()
+
+
+        return {"message": "Profile picture updated successfully", "user": user.to_dict(only=("id", "profile_picture"))}
+
+
+api.add_resource(UpdateProfilePicture, "/api/profile/<int:user_id>/profile_picture")
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

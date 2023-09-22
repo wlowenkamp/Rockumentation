@@ -89,19 +89,38 @@ class Album(db.Model, SerializerMixin):
     genre = db.Column(db.String, nullable=False)
     release_year = db.Column(db.Integer, nullable=False)
 
+    collection_id = db.Column(db.Integer, db.ForeignKey("collection.id"))
+
+    collection = db.relationship("Collection", back_populates="albums")
+
+
+
     def __repr__(self):
         return f"<Album(id={self.id}, title={self.title}, artist={self.artist})>"
 
     
-class Collection(db.Model, SerializerMixin):
+class Collection(db.Model):
     __tablename__ = "collection"
 
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), default="Master Collection")
+    
 
-    name = db.Column(db.String(255), primary_key=True, default="Master Collection")
-    user_id = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
-
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='collection')
+    
+
+    albums = db.relationship('Album', back_populates='collection')
+
+    def to_dict(self):
+        return{
+            "name": self.name,
+            "user_id": self.user_id,
+            "albums": [album.to_dict() for album in self.albums]
+        }
+    
+
+
 
 
 

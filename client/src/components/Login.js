@@ -2,15 +2,18 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { useUser } from './UserContext/User'; // Import useUser hook
 
-function Login({ handleLogin, handleUser }) {
+function Login() {
+  const {user, setUser} = useUser();
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loginError, setLoginError] = useState(null);
 
-  const handleInputChange = async () => {
+  const handleLogin = async () => {
     try {
+      // Perform login logic
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -23,16 +26,16 @@ function Login({ handleLogin, handleUser }) {
         const data = await response.json();
         if (response.status === 202) {
           setLoginError(null);
-          handleLogin(data);
+
+          setUser(data);
 
           const previous = history.location.state && history.location.state.from;
 
           if (previous && (previous !== "/api/login" && previous !== "/api/signup")) {
             history.push(previous);
           } else {
-            history.push("/profile/:id");
+            history.push(`/profile/${data.username}`);
           }
-          handleUser(data);
 
           // Display success toast
           toast.success('Login successful!', { autoClose: 2000 });
@@ -82,7 +85,7 @@ function Login({ handleLogin, handleUser }) {
                 required
               />
             </div>
-            <button type="submit" className="btn btn-dark" onClick={handleInputChange}>
+            <button type="submit" className="btn btn-dark" onClick={handleLogin}>
               Login
             </button>
           </form>
@@ -94,5 +97,6 @@ function Login({ handleLogin, handleUser }) {
 }
 
 export default Login;
+
 
 
