@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom';
-import { UserContext } from './UserContext/User';
+import { useUser } from './UserContext/User';
 import Main from './Main';
 import UserProfile from './UserProfile';
 import Login from './Login';
@@ -11,7 +11,7 @@ import Users from './Users'
 const App = () => {
   const [searchResults, setSearchResults] = useState([]);
   const history = useHistory();
-  const { user, setUser } = useContext(UserContext);
+  const { user, setUser } = useUser();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {

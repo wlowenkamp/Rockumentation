@@ -1,32 +1,65 @@
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
-import {UserContext} from './UserContext/User';
+import { useUser } from './UserContext/User';
 import CollectionCard from './CollectionCard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 const UserProfile = () => {
   const { username } = useParams();
-  const { user, setUser } = useContext(UserContext);
-
   const [collections, setCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [newProfilePicture, setNewProfilePicture] = useState('');
   const [isChangingPicture, setIsChangingPicture] = useState(false);
+  const { user, setUser } = useUser(); // Get setUser function from useUser
 
   const handleProfilePictureChange = () => {
-    setIsChangingPicture(!isChangingPicture);
+    setIsChangingPicture(true);
+  };
+
+  const handleSubmitProfilePicture = async () => {
+    try {
+      const response = await fetch(`/api/profile/${user.id}/profile_picture`, {
+        method: 'PATCH',
+        body: JSON.stringify({ profile_picture: newProfilePicture }),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to update profile picture');
+      }
+
+      setIsChangingPicture(false);
+      setNewProfilePicture('');
+
+      // Reload the user data to display the updated profile picture
+      fetch(`/api/profile/${user.username}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setUser({ ...user, profile_picture: data.profile_picture });
+          notifySuccess(); // Notify the user about the successful update
+        })
+        .catch((error) => {
+          console.error('Error fetching updated profile:', error);
+        });
+    } catch (error) {
+      console.error('Error updating profile picture:', error);
+    }
   };
 
   const notifySuccess = () => {
     toast.success('Profile picture uploaded successfully!');
   };
 
-  const fetchCollections = () => {
-    if (username && user) {
+  useEffect(() => {
+    if (username) {
+      // Fetch the collections of the profile user
       fetch(`/api/users/${username}/collection`)
         .then((response) => response.json())
         .then((collectionsData) => {
+          console.log('Collections Data:', collectionsData);
           setCollections(collectionsData);
           setLoading(false);
         })
@@ -37,42 +70,6 @@ const UserProfile = () => {
     } else {
       setLoading(false);
     }
-  };
-
-  const handleSubmitProfilePicture = async () => { 
-    console.log('handleSubmitProfilePicture called');
-    try {
-      setIsChangingPicture(true);
-      const response = await fetch(`/api/profile/${user.id}/profile_picture`, { 
-        method: 'PATCH',
-        body: JSON.stringify({ profile_picture: newProfilePicture }),
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-  
-      if (!response.ok) {
-        throw new Error('Failed to update profile picture');
-      }
-  
-      setIsChangingPicture(false);
-      setNewProfilePicture('');
-  
-    
-      const userDataResponse = await fetch(`/api/profile/${user.username}`); 
-      const data = await userDataResponse.json(); 
-      setUser({ ...user, profile_picture: data.profile_picture });
-      notifySuccess();
-    } catch (error) {
-      console.error('Error updating profile picture:', error);
-      setIsChangingPicture(false);
-    }
-  };
-  
-
-  useEffect(() => {
-    fetchCollections();
-    setIsChangingPicture(false);
   }, [username, user]);
 
   if (loading) {
@@ -91,7 +88,7 @@ const UserProfile = () => {
           <div className="text-center">
             <div className="profile-picture-container">
               <img
-                src={user.profile_picture || 'https://cdn.pixabay.com/photo/2016/08/08/09/17/avatar-1577909_1280.png'}
+                src={user.profile_picture || 'default-profile-picture-url'} // Replace with the default profile picture URL
                 alt="Profile"
                 className="img-thumbnail"
               />
@@ -106,20 +103,19 @@ const UserProfile = () => {
                 />
                 <button
                   className="btn btn-success mt-2"
-                  onClick={handleSubmitProfilePicture}
+                  onClick={() => {
+                    handleSubmitProfilePicture();
+                  }}
                   style={{ width: 100, height: 37 }}
                 >
                   Save
                 </button>
-
-
               </>
             ) : (
               <button
                 className="btn btn-danger mt-2"
                 onClick={handleProfilePictureChange}
                 style={{ width: 300 }}
-                disabled={isChangingPicture}
               >
                 Change Profile Picture
               </button>
@@ -131,9 +127,9 @@ const UserProfile = () => {
               collections.map((collection) => (
                 <div className="col" key={collection.id}>
                   <CollectionCard
-                    collectionName={collection.name}
-                    userName={user.username}
-                    albums={collection.albums}
+                    collectionName={userData.collection.name}
+                    userName={userData.username}
+                    albums={userData.collection.albums}
                   />
                 </div>
               ))
@@ -148,9 +144,6 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
-
-
-
 
 
 

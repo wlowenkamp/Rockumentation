@@ -24,6 +24,7 @@ class User(db.Model, SerializerMixin):
     
     collection = db.relationship('Collection', uselist=False, back_populates='user')
 
+    # master_collection = db.relationship("Collection", uselist=False, back_populates="user")
 
     def set_password(self, password):
         self.password = bcrypt.generate_password_hash(password).decode("utf-8")
@@ -108,8 +109,8 @@ class Collection(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='collection')
     
-    albums = db.relationship('Album', back_populates='collection')
 
+    albums = db.relationship('Album', back_populates='collection')
 
     def to_dict(self):
         return{

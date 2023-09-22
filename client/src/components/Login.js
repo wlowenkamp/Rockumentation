@@ -1,11 +1,11 @@
-import React, { useState, useContext} from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { UserContext } from './UserContext/User';
+import { useUser } from './UserContext/User'; // Import useUser hook
 
 function Login() {
-  const {user, setUser} = useContext(UserContext);
+  const {user, setUser} = useUser();
   const history = useHistory();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
