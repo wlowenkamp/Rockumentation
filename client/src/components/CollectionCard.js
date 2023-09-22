@@ -1,19 +1,24 @@
 import React from 'react';
 
-const CollectionCard = ({ collection }) => {
+function CollectionCard({ collectionName, userName, albums }) {
   return (
-    <div className="collection-card card">
-      <div className="card-body">
-        <h5 className="card-title">{collection.title}</h5>
-        <p className="card-text">Albums:</p>
-        <ul>
-          {collection.albums.map((album) => (
-            <li key={album.id}>{album.title}</li>
-          ))}
-        </ul>
+    <div className="collection-card">
+      <h2>{collectionName}</h2>
+      <p>Created by: {userName}</p>
+      <div className="album-list">
+        {albums.map((album) => (
+          <div className="album" key={album.id}>
+            <img src={album.image} alt={album.title} />
+            <h3>{album.title}</h3>
+            <p>Artist: {album.artist}</p>
+            <p>Genre: {album.genre}</p>
+            <p>Year: {album.release_year}</p>
+          </div>
+        ))}
       </div>
     </div>
   );
-};
+}
 
 export default CollectionCard;
+

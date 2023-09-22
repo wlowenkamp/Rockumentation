@@ -1,21 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { NavLink, useHistory } from 'react-router-dom';
 import Search from './Search';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 function Navbar({ loginStatus, user, handleSearch, handleUser }) {
-const [activeName, setActiveName] = useState('');
-  const history = useHistory()
-  useEffect(() => {
-    if (user) {
-      fetch('/api/users')
-        .then((response) => response.json())
-        .then((data) => setActiveName(data.username))
-        .catch((error) => console.log('Error: Could not fetch user data:', error));
-    }
-  }, [user]);
-  
+  const history = useHistory();
+
   const handleLogout = () => {
     fetch('/api/logout', {
       method: 'DELETE',
@@ -23,7 +14,7 @@ const [activeName, setActiveName] = useState('');
       .then(() => {
         handleUser(null);
         history.push('/');
-        toast.success('Logout successful!'); 
+        toast.success('Logout successful!');
       })
       .catch((error) => {
         console.error('Error logging out:', error);
@@ -58,8 +49,8 @@ const [activeName, setActiveName] = useState('');
             {user ? (
               <>
                 <li className="nav-item">
-                  <NavLink exact to={`/profile/${user}`} className="nav-link">
-                  {user.username}'s Profile
+                  <NavLink exact to={`/profile/${user.username}`} className="nav-link">
+                    {user.username}'s Profile
                   </NavLink>
                 </li>
                 <li className="nav-item">
@@ -93,6 +84,7 @@ const [activeName, setActiveName] = useState('');
 }
 
 export default Navbar;
+
 
 
 

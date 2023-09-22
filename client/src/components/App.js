@@ -1,37 +1,44 @@
-import React, { useContext, useEffect, useState } from "react";
-import { BrowserRouter as Router, Switch, Route, useHistory } from "react-router-dom";
-import { UserContext, UserProvider } from "./UserContext/User";
-import Main from "./Main";
-import Users from "./Users";
-import UserProfile from "./UserProfile";
-import Login from "./Login";
-import SignUp from "./SignUp";
-import Navbar from "./Navbar";
+import React, { useContext, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Switch, Route, useHistory } from 'react-router-dom';
+import { useUser } from './UserContext/User';
+import Main from './Main';
+import UserProfile from './UserProfile';
+import Login from './Login';
+import SignUp from './SignUp';
+import Navbar from './Navbar';
+import Users from './Users'
 
 const App = () => {
   const [searchResults, setSearchResults] = useState([]);
   const history = useHistory();
-  const [user, setUser] = useState(null);
-  const handleUser = (user) => setUser(user)
+  const { user, setUser } = useUser();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  
 
   useEffect(() => {
-    fetch("/api/check_session")
+    // Fetch user session data and update the user state
+    fetch('/api/check_session')
       .then((response) => {
         if (response.ok) {
-          response.json().then((user) => setUser(user));
+          return response.json();
+        } else {
+          throw new Error('User not authenticated');
         }
+      })
+      .then((userData) => {
+        setUser(userData);
+        setIsLoggedIn(true);
+      })
+      .catch((error) => {
+        console.error('Error checking session:', error);
+        setUser(null);
+        setIsLoggedIn(false);
       });
   }, [setUser]);
 
-  const handleLogin = (user) => {
-    setIsLoggedIn(true)
-    setUser(user)
-    console.log(user)
+  const handleLogin = (userData) => {
+    setIsLoggedIn(true);
+    setUser(userData);
   };
-
-
 
   const handleSearch = (searchQuery) => {
     fetch(`/api/albums?q=${searchQuery}`)
@@ -45,37 +52,37 @@ const App = () => {
 
   return (
     <Router>
-      <UserProvider>
-      <Navbar
-        handleSearch={handleSearch}
-        loginStatus={!!user}
-        handleUser={handleUser}  
-        user={user} 
-      />
-      <Switch>
-        <Route exact path="/">
-          <Main user={user} />
-        </Route>
-        <Route path="/login">
-          <Login handleLogin={handleLogin} user={user} handleUser={handleUser} />
-        </Route>
-        <Route path="/signup">
-          <SignUp />
-        </Route>
-        <Route path="/users">
-          <Users />
-        </Route>
-        <Route path="/profile/:id">
-          <UserProfile user={user} isLoggedIn={isLoggedIn} />
-        </Route>
-      </Switch>
-      </UserProvider>
+        <Navbar
+          handleSearch={handleSearch}
+          loginStatus={isLoggedIn} 
+          handleUser={setUser} 
+          user={user}
+        />
+        <Switch>
+          <Route exact path="/">
+            <Main user={user} handleUser={setUser} /> 
+          </Route>
+          <Route path="/login">
+            <Login handleLogin={handleLogin} user={user} handleUser={setUser} />
+          </Route>
+          <Route path="/signup">
+            <SignUp />
+          </Route>
+          <Route path="/users">
+            <Users />
+          </Route>
+          <Route path="/profile/:username">
+            {({ match }) => (
+              <UserProfile isLoggedIn={isLoggedIn} user={user} handleUser={setUser} /> 
+            )}
+          </Route>
+        </Switch>
     </Router>
-
   );
 };
 
 export default App;
+
 
 
 

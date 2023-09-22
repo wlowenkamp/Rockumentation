@@ -2,12 +2,6 @@ import React, { useContext, useState } from 'react';
 import { UserContext } from './UserContext/User';
 
 function AlbumCard({ album, addingToCollection, handleRemoveFromCollection, user }) {
-
-
-
-
-
-
   const [showDetails, setShowDetails] = useState(false);
   const [inCollection, setInCollection] = useState(false);
 

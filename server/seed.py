@@ -40,15 +40,15 @@ if __name__ == "__main__":
                 username=user_data["username"],
                 profile_picture=user_data["profile_picture"]
             )
-            new_user.set_password(user_data["password"]) 
+            new_user.set_password(user_data["password"])
 
-            new_collection = Collection(
-                user=new_user
-            )
+            new_collection = Collection(user=new_user)
 
             db.session.add(new_user)
             db.session.add(new_collection)
             db.session.commit()
+
+
 
 
 
