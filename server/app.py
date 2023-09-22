@@ -7,6 +7,7 @@ from flask import request, make_response, jsonify, session
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource
+import json 
 
 # Local imports
 from config import app, db, api, bcrypt
@@ -54,7 +55,17 @@ class UserRegister(Resource):
             password=hashed_password,
             profile_picture=profile_picture
         )
+        
+
         db.session.add(new_user)
+        db.session.commit()
+
+        new_collection=Collection(
+            name= f"{username}'s Master Collection",
+            user_id=new_user.id 
+        )
+
+        db.session.add(new_collection)
         db.session.commit()
 
         serialized_user = new_user.to_dict(rules=("-id", "-collection"))
@@ -144,7 +155,7 @@ class UserProfile(Resource):
     def get(self, username):
         user = User.query.filter_by(username=username).first()
         if user:
-            return make_response(user.to_dict(only=("id", "username", "profile_picture")), 201)
+            return make_response(user.to_dict(only=("id", "username", "profile_picture", "self.collection")), 201)
         else:
             return {"message": "User not found"}, 404
 
@@ -160,12 +171,10 @@ class UserCollection(Resource):
 
         collection = user.collection
 
-        collection_data = collection.to_dict()
-
-        collection_data["user_id"] = user.id 
+        collection_data = [item.to_dict() for item in collection.albums]
 
 
-        return make_response(collection_data, 200)
+        return jsonify(collection_data)
 
 api.add_resource(UserCollection, "/api/users/<string:username>/collection", methods=["GET"])
 
@@ -189,21 +198,18 @@ api.add_resource(AlbumById, "/api/albums/<int:album_id>")
 
 # Add Album to Collection
 class AddAlbumToCollection(Resource):
-    def post(self, user_id, album_id):
-        user = User.query.get(user_id)
-        album = Album.query.get(album_id)
+    def patch(self, username):
+        user = User.query.filter_by(username=username)
+        collection = user.collection
+        data = request.get_json()
         
-        if not user or not album:
-            return {"message": "User or Album not found"}, 404
+        collection.albums.append(data)
 
-        if album not in user.collection:
-            user.collection.append(album)
-            db.session.commit()
-            return {"message": "Album added to collection"}, 201
-        else:
-            return {"message": "Album already in collection"}, 409
+        db.session.commit()
 
-api.add_resource(AddAlbumToCollection, "/api/users/<string:username>/collection/albums/<int:album_id>")
+        return {"message": "Album added to collection successfully."}
+
+api.add_resource(AddAlbumToCollection, "/api/users/<string:username>/collection")
 
 # Remove Album from Collection
 class RemoveAlbumFromCollection(Resource):
@@ -221,24 +227,21 @@ class RemoveAlbumFromCollection(Resource):
         else:
             return {"message": "Album not in collection"}, 404
 
-api.add_resource(RemoveAlbumFromCollection, "/api/users/<string:username>/collection/albums/<int:album_id>")
+api.add_resource(RemoveAlbumFromCollection, "/api/users/<string:username>/collection")
 
 # Update Profile Pic
 class UpdateProfilePicture(Resource):
     def patch(self, user_id):
         user = User.query.get(user_id)
-
+        data = request.get_json()
         if not user:
             return {"message": "User not found"}, 404
 
-        new_profile_picture_url = request.json.get("profile_picture")
+        for attr in data:
+            setattr(user, attr, data[attr])
+        db.session.commit()
 
-        if new_profile_picture_url:
-            user.profile_picture = new_profile_picture_url
-            db.session.commit()
-            return {"message": "Profile picture updated successfully", "user": user.to_dict(only=("id", "profile_picture"))}
-        else:
-            return {"message": "Invalid profile picture URL"}, 400
+        return make_response(user.to_dict(only=("id", "profile_picture", "username",)), 200)
 
 api.add_resource(UpdateProfilePicture, "/api/profile/<int:user_id>/profile_picture")
 
