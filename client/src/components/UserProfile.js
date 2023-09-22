@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
 import { useUser } from './UserContext/User';
 import CollectionCard from './CollectionCard';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const UserProfile = () => {
   const { username } = useParams();
@@ -32,9 +34,23 @@ const UserProfile = () => {
       setIsChangingPicture(false);
       setNewProfilePicture('');
 
+      // Reload the user data to display the updated profile picture
+      fetch(`/api/profile/${user.username}`)
+        .then((response) => response.json())
+        .then((data) => {
+          setUser({ ...user, profile_picture: data.profile_picture });
+          notifySuccess(); // Notify the user about the successful update
+        })
+        .catch((error) => {
+          console.error('Error fetching updated profile:', error);
+        });
     } catch (error) {
       console.error('Error updating profile picture:', error);
     }
+  };
+
+  const notifySuccess = () => {
+    toast.success('Profile picture uploaded successfully!');
   };
 
   useEffect(() => {
@@ -56,8 +72,6 @@ const UserProfile = () => {
     }
   }, [username, user]);
 
-  // console.log('User Profile Picture:', user.profile_picture)
-
   if (loading) {
     return <div>Loading...</div>;
   }
@@ -71,41 +85,42 @@ const UserProfile = () => {
       <h1 className="text-center mt-4">Welcome, {user ? user.username : 'Guest'}!</h1>
       {user && (
         <>
-    <div className="text-center">
-      <div className="profile-picture-container">
-        <img
-          src={user.profile_picture}
-          alt="Profile"
-          className="img-thumbnail"
-        />
-      </div>
-      {isChangingPicture ? (
-        <>
-          <input
-            type="text"
-            placeholder="Enter Profile Picture URL"
-            value={newProfilePicture}
-            onChange={(e) => setNewProfilePicture(e.target.value)}
-          />
-          <button
-            className="btn btn-success mt-2"
-            onClick={handleSubmitProfilePicture}
-            style={{ width: 100, height: 37}}
-             
-          >
-            Save 
-          </button>
-        </>
-      ) : (
-        <button
-          className="btn btn-danger mt-2"
-          onClick={handleProfilePictureChange}
-          style={{ width: 300 }} 
-        >
-          Change Profile Picture
-        </button>
-      )}
-    </div>
+          <div className="text-center">
+            <div className="profile-picture-container">
+              <img
+                src={user.profile_picture || 'default-profile-picture-url'} // Replace with the default profile picture URL
+                alt="Profile"
+                className="img-thumbnail"
+              />
+            </div>
+            {isChangingPicture ? (
+              <>
+                <input
+                  type="text"
+                  placeholder="Enter Profile Picture URL"
+                  value={newProfilePicture}
+                  onChange={(e) => setNewProfilePicture(e.target.value)}
+                />
+                <button
+                  className="btn btn-success mt-2"
+                  onClick={() => {
+                    handleSubmitProfilePicture();
+                  }}
+                  style={{ width: 100, height: 37 }}
+                >
+                  Save
+                </button>
+              </>
+            ) : (
+              <button
+                className="btn btn-danger mt-2"
+                onClick={handleProfilePictureChange}
+                style={{ width: 300 }}
+              >
+                Change Profile Picture
+              </button>
+            )}
+          </div>
           <h2>Your Collection</h2>
           <div className="row row-cols-1 row-cols-md-3 g-4">
             {Array.isArray(collections) && collections.length > 0 ? (
@@ -129,6 +144,7 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
 
 
 

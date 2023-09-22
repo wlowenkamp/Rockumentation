@@ -231,19 +231,17 @@ class UpdateProfilePicture(Resource):
         if not user:
             return {"message": "User not found"}, 404
 
-        new_profile_picture = request.json.get("profile_picture")
+        new_profile_picture_url = request.json.get("profile_picture")
 
-
-        user.profile_picture = new_profile_picture
-
-
-        db.session.commit()
-
-
-        return {"message": "Profile picture updated successfully", "user": user.to_dict(only=("id", "profile_picture"))}
-
+        if new_profile_picture_url:
+            user.profile_picture = new_profile_picture_url
+            db.session.commit()
+            return {"message": "Profile picture updated successfully", "user": user.to_dict(only=("id", "profile_picture"))}
+        else:
+            return {"message": "Invalid profile picture URL"}, 400
 
 api.add_resource(UpdateProfilePicture, "/api/profile/<int:user_id>/profile_picture")
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
