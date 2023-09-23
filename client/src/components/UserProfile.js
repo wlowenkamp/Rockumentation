@@ -22,22 +22,22 @@ const UserProfile = () => {
     toast.success('Profile picture uploaded successfully!');
   };
 
-  const fetchCollections = () => {
-    if (username && user) {
-      fetch(`/api/users/${username}/collection`)
-        .then((response) => response.json())
-        .then((collectionsData) => {
-          setCollections(collectionsData);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching collections:', error);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  };
+  // const fetchCollections = () => {
+  //   if (username && user) {
+  //     fetch(`/api/users/${username}/collection`)
+  //       .then((response) => response.json())
+  //       .then((collectionsData) => {
+  //         setCollections(collectionsData);
+  //         setLoading(false);
+  //       })
+  //       .catch((error) => {
+  //         console.error('Error fetching collections:', error);
+  //         setLoading(false);
+  //       });
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // };
 
   const handleSubmitProfilePicture = async () => { 
     console.log('handleSubmitProfilePicture called');
@@ -52,6 +52,8 @@ const UserProfile = () => {
       });
   
       if (!response.ok) {
+        console.error("WHAT WAS THE STATUS FROM THE PATCH")
+        console.log(response.status)
         throw new Error('Failed to update profile picture');
       }
   
@@ -60,7 +62,8 @@ const UserProfile = () => {
   
     
       const userDataResponse = await fetch(`/api/profile/${user.username}`); 
-      const data = await userDataResponse.json(); 
+      const data = await userDataResponse.text();
+      console.log(data) 
       setUser({ ...user, profile_picture: data.profile_picture });
       notifySuccess();
     } catch (error) {
@@ -71,13 +74,9 @@ const UserProfile = () => {
   
 
   useEffect(() => {
-    fetchCollections();
     setIsChangingPicture(false);
   }, [username, user]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   if (!user && !username) {
     return <Redirect to="/" />;
@@ -127,19 +126,13 @@ const UserProfile = () => {
           </div>
           <h2>Your Collection</h2>
           <div className="row row-cols-1 row-cols-md-3 g-4">
-            {Array.isArray(collections) && collections.length > 0 ? (
-              collections.map((collection) => (
-                <div className="col" key={collection.id}>
+                <div className="col" key={user.collection.id}>
                   <CollectionCard
-                    collectionName={collection.name}
+                    collectionName={user.collection.name}
                     userName={user.username}
-                    albums={collection.albums}
+                    albums={user.collection.albums}
                   />
                 </div>
-              ))
-            ) : (
-              <p>This collection is empty!</p>
-            )}
           </div>
         </>
       )}

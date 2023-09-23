@@ -2,31 +2,56 @@ import React, { useState } from 'react';
 import { useContext } from 'react';
 import { UserContext } from './UserContext/User';
 
-function AlbumCard({ album, user,}) {
+function AlbumCard({ album, user}) {
   const [showDetails, setShowDetails] = useState(false);
-  console.log(user)
 
+  const {setUser} = useContext(UserContext)
   
+  const addAlbumToUser = (new_album) => {
+    const new_user = {
+      ...user,
+      collection: {
+        ...user.collection,
+        albums: [...user.collection.albums, new_album]
+      } 
+    } 
+    setUser(new_user)
+  }
+ 
 
 
   const handleViewDetails = () => {
     setShowDetails(!showDetails);
   };
 
-  const addToCollection = () => {
+  const addToCollection = async () => {
+    const data = {
+      album_id: album.id,
+      collection_id: user.collection.id
+    }
+    console.log(data)
+    console.log(user)
     try {
-        const response = fetch(`/api/users/${user.username}/collection`, {
-          method: 'PATCH',
+      const response = await fetch(`/api/addingnewalbum`, {
+          method: 'POST',
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(album)
+          body: JSON.stringify(data)
       });
 
-      if (!response.ok) {
+      if (!response.ok ) {
         throw new Error('Failed to add album to collection');
+      } else { 
+        const albumObject = await response.json()
+        console.log(albumObject)
+        addAlbumToUser(albumObject)
+        
       }
 
 
-      notifySuccess('Album added to collection');
+
+
+
+      
     } catch (error) {
       console.error('Error adding album to collection:', error);
     }
@@ -66,7 +91,7 @@ function AlbumCard({ album, user,}) {
           </div>
         )}
 
-        {user?.collection?.includes(album.id) ? (
+        { user?.collection.albums.map((a) => a.id).includes(album.id) ? ( //user?.collection?.includes(album.id) ? (
           <button className="btn btn-danger" onClick={removeFromCollection}>
             Remove from Collection
           </button>

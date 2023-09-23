@@ -8,12 +8,13 @@ from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 from flask_restful import Resource
 import json 
+import ipdb 
 
 # Local imports
 from config import app, db, api, bcrypt
 
 # Add your model imports
-from models import User, Album, Collection
+from models import User, Album, Collection, AlbumCollection
 # Views go here!
 
 
@@ -106,7 +107,7 @@ class CheckSession(Resource):
         
         user = User.query.filter(User.id==session.get('user_id')).first()
         if user:
-            return make_response(user.to_dict(only=("id","username", "profile_picture")), 200)
+            return make_response(user.to_dict(only=("id","username", "profile_picture", "collection", "collection.albums", "collection.id")), 200)
         return {'message': 'Not logged in'}, 401
     
 
@@ -155,7 +156,7 @@ class UserProfile(Resource):
     def get(self, username):
         user = User.query.filter_by(username=username).first()
         if user:
-            return make_response(user.to_dict(only=("id", "username", "profile_picture", "self.collection")), 201)
+            return make_response(user.to_dict(only=("id", "username", "profile_picture", "collection")), 201)
         else:
             return {"message": "User not found"}, 404
 
@@ -199,13 +200,18 @@ api.add_resource(AlbumById, "/api/albums/<int:album_id>")
 # Add Album to Collection
 class AddAlbumToCollection(Resource):
     def patch(self, username):
-        user = User.query.filter_by(username=username)
+        user = User.query.filter_by(username=username).first()
         collection = user.collection
         data = request.get_json()
+
         
         collection.albums.append(data)
+        try:
+            db.session.commit()
 
-        db.session.commit()
+        except: 
+            db.session.rollback()
+            return make_response("Album was not succesfully saved.", 500)
 
         return {"message": "Album added to collection successfully."}
 
@@ -244,6 +250,29 @@ class UpdateProfilePicture(Resource):
         return make_response(user.to_dict(only=("id", "profile_picture", "username",)), 200)
 
 api.add_resource(UpdateProfilePicture, "/api/profile/<int:user_id>/profile_picture")
+
+#Add To Collection post to create new instance of AlbumCollection
+class AddToCollection(Resource):
+    def post(self):
+        data = request.json
+        ac1 = AlbumCollection(album_id = data["album_id"], collection_id = data["collection_id"])
+        print("#############################")
+        print(ac1)
+        print("#############################")
+
+        db.session.add(ac1)
+        try: 
+            db.session.commit()
+        except:
+            db.session.rollback()
+            return make_response({"error": "could not save albumcollection"},500)
+        
+
+
+        return make_response(ac1.album.to_dict())
+
+api.add_resource(AddToCollection, "/api/addingnewalbum")
+
 
 
 if __name__ == '__main__':

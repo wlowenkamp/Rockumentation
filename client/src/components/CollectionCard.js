@@ -1,12 +1,13 @@
 import React from 'react';
 
 function CollectionCard({ collectionName, userName, albums }) {
+  console.log(albums)
   return (
     <div className="collection-card">
       <h2>{collectionName}</h2>
       <p>Created by: {userName}</p>
       <div className="album-list">
-        {albums.map((album) => (
+        {albums?.map((album) => (
           <div className="album" key={album.id}>
             <img src={album.image} alt={album.title} />
             <h3>{album.title}</h3>
@@ -19,6 +20,5 @@ function CollectionCard({ collectionName, userName, albums }) {
     </div>
   );
 }
-
 export default CollectionCard;
 

@@ -3,6 +3,7 @@ from sqlalchemy_serializer import SerializerMixin
 from sqlalchemy.orm import validates
 from sqlalchemy import MetaData
 from config import db, bcrypt
+from sqlalchemy.ext.associationproxy import association_proxy
 
 metadata = MetaData(
     naming_convention={
@@ -77,6 +78,22 @@ class User(db.Model, SerializerMixin):
         if not new_profile_picture:
             new_profile_picture = "https://cdn.vectorstock.com/i/preview-1x/77/30/default-avatar-profile-icon-grey-photo-placeholder-vector-17317730.jpg"
         return new_profile_picture
+    
+class AlbumCollection(db.Model, SerializerMixin):
+    __tablename__ = "album_collections"
+
+    id= db.Column(db.Integer, primary_key=True)
+    
+    
+    album_id = db.Column(db.ForeignKey("album.id"), nullable=False)
+
+    album = db.relationship("Album", back_populates="album_collections")
+
+    collection_id = db.Column(db.ForeignKey("collection.id"), nullable=False)
+
+    collection = db.relationship("Collection", back_populates="album_collections")
+
+    serialize_rules = ("-album", "-collection") 
 
 class Album(db.Model, SerializerMixin):
     __tablename__ = "album"
@@ -90,15 +107,16 @@ class Album(db.Model, SerializerMixin):
 
     collection_id = db.Column(db.Integer, db.ForeignKey("collection.id"))
 
-    collection = db.relationship("Collection", back_populates="albums")
+    # collection = db.relationship("Collection", back_populates="albums")
 
+    album_collections = db.relationship("AlbumCollection", back_populates="album")
 
 
     def __repr__(self):
         return f"<Album(id={self.id}, title={self.title}, artist={self.artist})>"
 
     
-class Collection(db.Model):
+class Collection(db.Model, SerializerMixin):
     __tablename__ = "collection"
 
     id = db.Column(db.Integer, primary_key=True)
@@ -108,20 +126,17 @@ class Collection(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     user = db.relationship('User', back_populates='collection')
     
-    albums = db.relationship('Album', back_populates='collection')
 
+    album_collections = db.relationship('AlbumCollection', back_populates='collection')
 
-    def to_dict(self):
-        return{
-            "name": self.name,
-            "user_id": self.user_id,
-            "albums": [album.to_dict() for album in self.albums]
-        }
-    
+    albums = association_proxy("album_collections", "album")
 
+    serialize_rules = ("-album_collections", "-user")
 
-
-
-
-
-
+    # def to_dict(self):
+    #     return{
+    #         "name": self.name,
+    #         "user_id": self.user_id,
+    #         "albums": [album.to_dict() for album in self.albums]
+        
+    #     }
