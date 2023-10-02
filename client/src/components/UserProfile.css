@@ -1,0 +1,72 @@
+/* Flip Card Styles */
+.flip-card {
+    perspective: 1000px;
+    width: 200px; /* Adjust the width as needed */
+  }
+  
+  .flip-card-inner {
+    width: 100%;
+    height: 100%;
+    transition: transform 0.5s;
+    transform-style: preserve-3d;
+  }
+  
+  .flip-card:hover .flip-card-inner {
+    transform: rotateY(180deg);
+  }
+  
+  .flip-card-front,
+  .flip-card-back {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    backface-visibility: hidden;
+    display: flex;
+    flex-direction: column; /* Display details in a column */
+    justify-content: center; /* Center vertically */
+    align-items: center; /* Center horizontally */
+  }
+  
+  .flip-card-front {
+    background-color: #f1f1f1;
+  }
+  
+  .flip-card-back {
+    background-color: #fff;
+    transform: rotateY(180deg);
+    padding: 10px;
+  }
+  
+  /* Gallery Container Styles */
+  .gallery-container {
+    height: 500px;
+    width: auto;
+    overflow-x: auto;
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-start; /* Ensure items start from the left */
+    align-items: center; /* Center items vertically */
+  }
+  
+  .gallery-item {
+    flex: 0 0 auto;
+    margin-right: 10px; /* Add margin to create spacing between items */
+    border: 1px solid #ddd;
+    box-sizing: border-box; /* Ensure border is included in width */
+    width: 200px; /* Set a fixed width for each item */
+  }
+  
+  @media (max-width: 768px) {
+    .gallery-container {
+      width: 100%;
+    }
+  }
+  
+  
+  
+
+
+  
+  
+ 
+  
