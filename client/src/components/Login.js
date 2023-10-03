@@ -13,7 +13,7 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      // Perform login logic
+
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -37,7 +37,7 @@ function Login() {
             history.push(`/profile/${data.username}`);
           }
 
-          // Display success toast
+
           toast.success('Login successful!', { autoClose: 2000 });
         } else {
           setLoginError('Invalid username or password');

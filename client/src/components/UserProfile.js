@@ -56,9 +56,9 @@ const UserProfile = () => {
     }
   };
 
-  useEffect(() => {
+    useEffect(() => {
     setIsChangingPicture(false);
-  }, [username, user]);
+}, [username, user]);
 
   if (!user && !username) {
     return <Redirect to="/" />;
@@ -111,12 +111,12 @@ const UserProfile = () => {
           <div className="gallery-container">
             {user.collection.albums.map((album) => (
               <div className="card gallery-item" key={album.id}>
-                <CollectionCard
-                  album={album}
-                  isSelected={selectedAlbum}
-                  onSelect={() => setSelectedAlbum(album)}
-                />
-              </div>
+                  <CollectionCard
+                    album={album}
+                    isSelected={selectedAlbum}
+                    onSelect={() => setSelectedAlbum(album)}
+                  />
+                </div>
             ))}
           </div>
         </>
