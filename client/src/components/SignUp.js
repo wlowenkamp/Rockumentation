@@ -54,8 +54,10 @@ function SignUp() {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h1 className="text-center mt-4">Rockumentation</h1>
-          <h2 className="text-center mt-4">Sign Up</h2>
+          <h1 className="text-center mt-4" style={{ fontFamily: 'Permanent Marker, cursive' }}>
+          Rockumentation
+          </h1>
+          <h2 className="text-center mt-4" style={{ fontFamily: 'Sriracha, cursive'}}>SIGN UP</h2>
           <ToastContainer />
           {signUpError && <p className="text-danger">{signUpError}</p>}
           <form onSubmit={handleSubmit} className="text-center">

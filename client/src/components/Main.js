@@ -14,20 +14,23 @@ const Main = ({ user }) => {
 
   return (
     <div className="container">
-          <h1 className="text-center mt-4">Rockumentation</h1>
-          <h2 className="text-center mt-4"> Album Catalog</h2>
-          <div className="row row-cols-1 row-cols-md-3 g-4">
+      <h1 className="text-center mt-4" style={{ fontFamily: 'Permanent Marker, cursive' }}>
+        Rockumentation
+      </h1>
+      <h2 className="text-center mt-4" style={{ fontFamily: 'Sriracha, cursive'}}> ALBUM CATALOG</h2>
+      <div className="row row-cols-1 row-cols-md-3 g-4">
         {albums.map((album) => (
           <div className="col" key={album.id}>
             <AlbumCard album={album} user={user} />
-        </div>
-))}
+          </div>
+        ))}
       </div>
     </div>
   );
 };
 
 export default Main;
+
 
 
 

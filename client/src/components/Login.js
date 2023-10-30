@@ -55,8 +55,12 @@ function Login() {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h1 className="text-center mt-4">Rockumentation</h1>
-          <h2 className="text-center mt-4">Login</h2>
+          <h1 className="text-center mt-4" style={{ fontFamily: 'Permanent Marker, cursive' }}>
+          Rockumentation
+          </h1>
+          <h2 className="text-center mt-4" style={{ fontFamily: 'Sriracha, cursive'}}>
+            LOGIN
+          </h2>
           <ToastContainer />
           <form onSubmit={(event) => event.preventDefault()} className="text-center">
             <div className="mb-3">
