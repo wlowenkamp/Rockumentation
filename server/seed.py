@@ -28,8 +28,8 @@ if __name__ == "__main__":
 
         # Users
         users_data = [
-            {"username": "Wlowenkamp", "password": "password1", "profile_picture": "https://scontent.fosu2-1.fna.fbcdn.net/v/t1.6435-9/53333154_2378574502176834_2128324052295614464_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=174925&_nc_ohc=LnJ0jB5bwlMAX_fsl-m&_nc_ht=scontent.fosu2-1.fna&oh=00_AfCLtxsaf0qxX9WNHMW0RHv5Q-he7HXIoa2tlzikn9mWLw&oe=65302B0C"},
-            {"username": "Clowenkamp", "password": "password1", "profile_picture": "https://scontent.fosu2-2.fna.fbcdn.net/v/t1.6435-9/119816023_3536493099777858_4509614180732850408_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=174925&_nc_ohc=KDPxhP00j30AX8kL8Gk&_nc_ht=scontent.fosu2-2.fna&oh=00_AfD4EzhhYDmjxM1jvkOwcUWMTIqDdZXuKK0xFOvSKyQcUA&oe=653145E6"},
+            {"username": "Wlowenkamp", "password": "password1", "profile_picture": "https://upload.wikimedia.org/wikipedia/en/thumb/5/5d/Columbus_Blue_Jackets_logo.svg/1200px-Columbus_Blue_Jackets_logo.svg.png"},
+            {"username": "Clowenkamp", "password": "password1", "profile_picture": "https://i.pinimg.com/originals/77/fb/2c/77fb2c12169666591a64e9491d5a214f.jpg"},
             {"username": "DannyDevito", "password": "password1", "profile_picture": "https://cdn.mos.cms.futurecdn.net/a9S8crNdUjgmaDGWQTbVVM-1920-80.jpg.webp"},
 
         ]

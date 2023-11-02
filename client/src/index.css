@@ -1,22 +1,90 @@
-:root {
-  --bg: #282c34;
-  --header: #fff;
-  --link: #61dafb;
-  --text: hsla(0, 0%, 100%, 0.88);
+h1 {
+  font-family: 'Permanent Marker', cursive !important;
+  color:#69140E !important;
+}
+
+h2 {
+  font-family: 'Permanent Marker', cursive !important;
+  color:#69140E !important; 
+}
+
+
+.container {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: #E1DDCB !important;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden; 
 }
 
 ul {
   list-style: none;
   padding-left: 0;
 }
+
 .profile-picture-container {
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 300px; 
-  height: 300px; 
+  width: 300px;
+  height: 300px;
   overflow: hidden;
   margin: 0 auto;
 }
+
+
+/* Navbar styles */
+.navbar {
+  background-color: #FAC840;
+  border: 5px solid #69140E; /* Updated border color */
+}
+
+.nav-link {
+  color: #69140E !important; 
+  font-family: 'Permanent Marker', cursive !important; 
+}
+
+.navbar-toggler-icon {
+  background-color: #69140E; /* Updated navbar-toggler icon color */
+}
+
+/* Styling for all elements with the 'card' class */
+.card {
+  background-color: #442912 !important;
+  border: 6px solid #D18A22 !important;
+  padding: 10px;
+  color: silver !important; /* Text color for the entire component */
+}
+
+/* Font style for the title */
+.card-title {
+  font-family: 'Permanent Marker', cursive !important;
+}
+
+/* Font style for the artist */
+.card-artist {
+  font-family: 'Permanent Marker', cursive !important;
+}
+
+/* Font style for release year and genre */
+.card-detail {
+  font-family: 'Permanent Marker', cursive !important;
+}
+
+/* Font style for labels, buttons, and "Show/Hide Details" text */
+.card-label, .card-button {
+  font-family: 'Teko', sans-serif !important;
+}
+
+
+
+
+
+
+
 
 

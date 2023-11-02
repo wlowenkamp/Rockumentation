@@ -14,10 +14,10 @@ const Main = ({ user }) => {
 
   return (
     <div className="container">
-      <h1 className="text-center mt-4" style={{ fontFamily: 'Permanent Marker, cursive' }}>
+      <h1 className="text-center mt-4">
         Rockumentation
       </h1>
-      <h2 className="text-center mt-4" style={{ fontFamily: 'Sriracha, cursive'}}> ALBUM CATALOG</h2>
+      <h2 className="text-center mt-4"> ALBUM CATALOG</h2>
       <div className="row row-cols-1 row-cols-md-3 g-4">
         {albums.map((album) => (
           <div className="col" key={album.id}>
