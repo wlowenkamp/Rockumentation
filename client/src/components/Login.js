@@ -13,7 +13,7 @@ function Login() {
 
   const handleLogin = async () => {
     try {
-      // Perform login logic
+
       const response = await fetch('/api/login', {
         method: 'POST',
         headers: {
@@ -37,7 +37,7 @@ function Login() {
             history.push(`/profile/${data.username}`);
           }
 
-          // Display success toast
+
           toast.success('Login successful!', { autoClose: 2000 });
         } else {
           setLoginError('Invalid username or password');
@@ -55,8 +55,12 @@ function Login() {
     <div className="container mt-5">
       <div className="row justify-content-center">
         <div className="col-md-6">
-          <h1 className="text-center mt-4">Rockumentation</h1>
-          <h2 className="text-center mt-4">Login</h2>
+          <h1 className="text-center mt-4">
+          Rockumentation
+          </h1>
+          <h2 className="text-center mt-4">
+            LOGIN
+          </h2>
           <ToastContainer />
           <form onSubmit={(event) => event.preventDefault()} className="text-center">
             <div className="mb-3">

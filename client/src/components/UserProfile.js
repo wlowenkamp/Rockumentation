@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useContext } from 'react';
 import { useParams, Redirect } from 'react-router-dom';
-import {UserContext} from './UserContext/User';
+import { UserContext } from './UserContext/User';
 import CollectionCard from './CollectionCard';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import './UserProfile.css';
 
 const UserProfile = () => {
   const { username } = useParams();
@@ -13,6 +14,7 @@ const UserProfile = () => {
   const [loading, setLoading] = useState(true);
   const [newProfilePicture, setNewProfilePicture] = useState('');
   const [isChangingPicture, setIsChangingPicture] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState(null);
 
   const handleProfilePictureChange = () => {
     setIsChangingPicture(!isChangingPicture);
@@ -22,45 +24,30 @@ const UserProfile = () => {
     toast.success('Profile picture uploaded successfully!');
   };
 
-  const fetchCollections = () => {
-    if (username && user) {
-      fetch(`/api/users/${username}/collection`)
-        .then((response) => response.json())
-        .then((collectionsData) => {
-          setCollections(collectionsData);
-          setLoading(false);
-        })
-        .catch((error) => {
-          console.error('Error fetching collections:', error);
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  };
-
-  const handleSubmitProfilePicture = async () => { 
+  const handleSubmitProfilePicture = async () => {
     console.log('handleSubmitProfilePicture called');
     try {
       setIsChangingPicture(true);
-      const response = await fetch(`/api/profile/${user.id}/profile_picture`, { 
+      const response = await fetch(`/api/profile/${user.id}/profile_picture`, {
         method: 'PATCH',
         body: JSON.stringify({ profile_picture: newProfilePicture }),
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (!response.ok) {
+        console.error("WHAT WAS THE STATUS FROM THE PATCH")
+        console.log(response.status)
         throw new Error('Failed to update profile picture');
       }
-  
+
       setIsChangingPicture(false);
       setNewProfilePicture('');
-  
-    
-      const userDataResponse = await fetch(`/api/profile/${user.username}`); 
-      const data = await userDataResponse.json(); 
+
+      const userDataResponse = await fetch(`/api/profile/${user.username}`);
+      const data = await userDataResponse.text();
+      console.log(data)
       setUser({ ...user, profile_picture: data.profile_picture });
       notifySuccess();
     } catch (error) {
@@ -68,23 +55,17 @@ const UserProfile = () => {
       setIsChangingPicture(false);
     }
   };
-  
 
-  useEffect(() => {
-    fetchCollections();
+    useEffect(() => {
     setIsChangingPicture(false);
-  }, [username, user]);
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+}, [username, user]);
 
   if (!user && !username) {
     return <Redirect to="/" />;
   }
 
   return (
-    <div className="container">
+    <div className="container-fluid">
       <h1 className="text-center mt-4">Welcome, {user ? user.username : 'Guest'}!</h1>
       {user && (
         <>
@@ -111,8 +92,6 @@ const UserProfile = () => {
                 >
                   Save
                 </button>
-
-
               </>
             ) : (
               <button
@@ -125,21 +104,20 @@ const UserProfile = () => {
               </button>
             )}
           </div>
-          <h2>Your Collection</h2>
-          <div className="row row-cols-1 row-cols-md-3 g-4">
-            {Array.isArray(collections) && collections.length > 0 ? (
-              collections.map((collection) => (
-                <div className="col" key={collection.id}>
+          <div>
+            <h2 className="text-center">Your Collection</h2>
+            <p className="text-center">Created by: {user.username}</p>
+          </div>
+          <div className="gallery-container">
+            {user.collection.albums.map((album) => (
+              <div className="card gallery-item" key={album.id}>
                   <CollectionCard
-                    collectionName={collection.name}
-                    userName={user.username}
-                    albums={collection.albums}
+                    album={album}
+                    isSelected={selectedAlbum}
+                    onSelect={() => setSelectedAlbum(album)}
                   />
                 </div>
-              ))
-            ) : (
-              <p>This collection is empty!</p>
-            )}
+            ))}
           </div>
         </>
       )}
@@ -148,6 +126,8 @@ const UserProfile = () => {
 };
 
 export default UserProfile;
+
+
 
 
 
